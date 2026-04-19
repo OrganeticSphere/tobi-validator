@@ -74,7 +74,8 @@ That means:
 
 - the public action wrapper lives here
 - the private binary artifact is delivered from `OrganeticSphere/tobi-validator-dist`
-- consuming repositories must provide a secret token for artifact access
+- public onboarding uses TOBI_EVAL_TOKEN
+- internal/manual fallback may still use dist_token, but that is not the primary public path
 
 ### Required Secret
 
@@ -82,9 +83,8 @@ Create a repository secret in the consuming GitHub repository:
 
 - `TOBI_EVAL_TOKEN`
 
-That secret should be a **read-only fine-grained token** with access only to:
-
-- `OrganeticSphere/tobi-validator-dist`
+That secret should be the 7-day evaluation token issued by Organetic through the evaluation access path.
+#### --> https://organetic.ai/eval-access
 
 ### Minimal `canon` Example
 
@@ -104,7 +104,7 @@ jobs:
 
       - uses: OrganeticSphere/tobi-validator@v1
         with:
-          dist_token: ${{ secrets.TOBI_EVAL_TOKEN }}
+          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: examples/sample.tsubasa
 ```
@@ -127,7 +127,7 @@ jobs:
 
       - uses: OrganeticSphere/tobi-validator@v1
         with:
-          dist_token: ${{ secrets.TOBI_EVAL_TOKEN }}
+          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: examples/golden/fixtures.json
 ```
@@ -136,10 +136,9 @@ jobs:
 
 Action v1 is intentionally narrow:
 
-- Windows-only
 - `canon` mode
 - `golden` mode
-- private artifact access required
+- evaluation-token access path for public onboarding
 - checksum verification required
 - no runtime/backend/API/platform claims
 

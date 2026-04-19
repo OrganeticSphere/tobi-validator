@@ -22,7 +22,7 @@ It is:
 - a practical path for canonical reasoning artifact discipline
 
 This starter is not a new product surface.
-This starter is not a published GitHub Action or Marketplace offering.
+This starter uses the published GitHub Action wrapper and the current public evaluation access path for the released Stage 1 validator line.
 This starter is not a verification API.
 This starter is not a platform integration layer.
 
@@ -61,7 +61,7 @@ usage is already available through the public repository by default.
 A narrow Stage 1 GitHub workflow should:
 
 1. check out the repository that owns the files you want to validate
-2. obtain access to the released validator artifact through the intended delivery path
+2. obtain access through the public evaluation access path using TOBI_EVAL_TOKEN
 3. verify integrity material before use
 4. run the released CLI, not an invented wrapper surface
 5. run `canon` and/or `golden` against repository-owned or shipped example files
@@ -78,8 +78,14 @@ The minimal example in this repo is meant to show that integration shape.
    - `examples/golden/fixtures.json`
 3. Or replace those paths with repository-owned validator inputs after the first
    successful run.
-4. Align the artifact-access step with your actual validator delivery path.
+4. Add TOBI_EVAL_TOKEN to your repository secrets and use the published action wrapper path.
 5. Treat any non-zero validator exit as a real validation or conformance failure.
+
+## Current public execution path:
+- request a 7-day evaluation token from Organetic
+- store it as TOBI_EVAL_TOKEN
+- use OrganeticSphere/tobi-validator@v1
+- run canon and/or golden
 
 ## What It Does Not Imply
 
