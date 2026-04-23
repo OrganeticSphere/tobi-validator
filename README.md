@@ -61,6 +61,17 @@ Representative command shapes for the released validator line:
 ```
 
 ---
+### Proof-by-example repository
+
+See the first public flagship validator-first demo repository:
+
+- [Tobi Flagship Use Case — AI-Agent Reasoning Gate](https://github.com/OrganeticSphere/tobi-flagship-use-case)
+
+This repo shows:
+- a valid `.tsubasa` artifact,
+- a drift-equivalent convergent variant,
+- a malformed reject sibling,
+- a GitHub PR gate around the released Stage 1 validator line.
 
 ## GitHub Action
 
