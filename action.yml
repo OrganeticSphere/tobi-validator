@@ -21,13 +21,13 @@ inputs:
     required: false
     default: "OrganeticSphere/tobi-validator-dist"
   archive_name:
-    description: "Bundle archive name"
+    description: "Optional explicit bundle archive name. When omitted, the action infers the archive from runner OS and architecture."
     required: false
-    default: "stage1-tobi-validator-v0.7.0-windows-x86_64.zip"
+    default: ""
   archive_sha256_name:
-    description: "Checksum sidecar name for the outer bundle archive"
+    description: "Optional explicit checksum sidecar name. When omitted, the action uses <archive_name>.sha256."
     required: false
-    default: "stage1-tobi-validator-v0.7.0-windows-x86_64.zip.sha256"
+    default: ""
   mode:
     description: "Validator mode: canon or golden"
     required: true
@@ -44,7 +44,7 @@ runs:
   using: "composite"
   steps:
     - name: Validate inputs
-      shell: powershell
+      shell: pwsh
       run: |
         $mode = "${{ inputs.mode }}".ToLowerInvariant()
         $evalToken = "${{ inputs.eval_token }}"
@@ -58,14 +58,72 @@ runs:
           throw "Input 'mode' must be either 'canon' or 'golden'."
         }
 
+    - name: Resolve platform archive names
+      shell: pwsh
+      run: |
+        $explicitArchive = "${{ inputs.archive_name }}"
+        $explicitSha = "${{ inputs.archive_sha256_name }}"
+        $version = "${{ inputs.version }}"
+        $runnerOs = "$env:RUNNER_OS"
+        $runnerArch = "$env:RUNNER_ARCH"
+
+        if ([string]::IsNullOrWhiteSpace($explicitArchive)) {
+          switch ($runnerOs) {
+            "Windows" {
+              if ($runnerArch -ne "X64") {
+                throw "Unsupported Windows runner architecture for Tobi Validator: $runnerArch"
+              }
+              $archiveName = "$version-windows-x86_64.zip"
+            }
+            "Linux" {
+              if ($runnerArch -ne "X64") {
+                throw "Unsupported Linux runner architecture for Tobi Validator: $runnerArch"
+              }
+              $archiveName = "$version-linux-x86_64.tar.gz"
+            }
+            "macOS" {
+              if ($runnerArch -eq "ARM64") {
+                $archiveName = "$version-macos-arm64.tar.gz"
+              }
+              elseif ($runnerArch -eq "X64") {
+                $archiveName = "$version-macos-x86_64.tar.gz"
+              }
+              else {
+                throw "Unsupported macOS runner architecture for Tobi Validator: $runnerArch"
+              }
+            }
+            default {
+              throw "Unsupported runner OS for Tobi Validator: $runnerOs"
+            }
+          }
+        }
+        else {
+          $archiveName = $explicitArchive
+        }
+
+        if ([string]::IsNullOrWhiteSpace($explicitSha)) {
+          $shaName = "$archiveName.sha256"
+        }
+        else {
+          $shaName = $explicitSha
+        }
+
+        "TOBI_ARCHIVE_NAME=$archiveName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "TOBI_ARCHIVE_SHA256_NAME=$shaName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "TOBI_RUNNER_OS=$runnerOs" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        "TOBI_RUNNER_ARCH=$runnerArch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+        Write-Host "Resolved Tobi archive: $archiveName"
+        Write-Host "Resolved Tobi checksum sidecar: $shaName"
+
     - name: Download bundle via evaluation broker
       if: ${{ inputs.eval_token != '' }}
-      shell: powershell
+      shell: pwsh
       run: |
         $brokerUrl = "https://api.organetic.ai/api/eval/download"
         $version = "${{ inputs.version }}"
-        $archiveName = "${{ inputs.archive_name }}"
-        $shaName = "${{ inputs.archive_sha256_name }}"
+        $archiveName = "$env:TOBI_ARCHIVE_NAME"
+        $shaName = "$env:TOBI_ARCHIVE_SHA256_NAME"
         $repo = "${{ github.repository }}"
         $runId = "${{ github.run_id }}"
         $token = "${{ inputs.eval_token }}"
@@ -94,7 +152,7 @@ runs:
 
     - name: Resolve private release directly
       if: ${{ inputs.eval_token == '' && inputs.dist_token != '' }}
-      shell: powershell
+      shell: pwsh
       run: |
         $headers = @{
           Authorization = "Bearer ${{ inputs.dist_token }}"
@@ -113,8 +171,8 @@ runs:
           throw "Failed to resolve private release '$tag' in '$repo'. Check that the tag exists and that 'dist_token' has read access."
         }
 
-        $archiveName = "${{ inputs.archive_name }}"
-        $shaName = "${{ inputs.archive_sha256_name }}"
+        $archiveName = "$env:TOBI_ARCHIVE_NAME"
+        $shaName = "$env:TOBI_ARCHIVE_SHA256_NAME"
 
         $archiveAsset = $release.assets | Where-Object { $_.name -eq $archiveName } | Select-Object -First 1
         $shaAsset = $release.assets | Where-Object { $_.name -eq $shaName } | Select-Object -First 1
@@ -132,7 +190,7 @@ runs:
 
     - name: Download private bundle assets directly
       if: ${{ inputs.eval_token == '' && inputs.dist_token != '' }}
-      shell: powershell
+      shell: pwsh
       run: |
         $downloadHeaders = @{
           Authorization = "Bearer ${{ inputs.dist_token }}"
@@ -140,39 +198,73 @@ runs:
           "X-GitHub-Api-Version" = "2022-11-28"
         }
 
-        Invoke-WebRequest -Uri $env:TOBI_ASSET_URL -Headers $downloadHeaders -OutFile "${{ inputs.archive_name }}"
-        Invoke-WebRequest -Uri $env:TOBI_SHA_ASSET_URL -Headers $downloadHeaders -OutFile "${{ inputs.archive_sha256_name }}"
+        Invoke-WebRequest -Uri $env:TOBI_ASSET_URL -Headers $downloadHeaders -OutFile "$env:TOBI_ARCHIVE_NAME"
+        Invoke-WebRequest -Uri $env:TOBI_SHA_ASSET_URL -Headers $downloadHeaders -OutFile "$env:TOBI_ARCHIVE_SHA256_NAME"
 
     - name: Verify bundle checksum
-      shell: powershell
+      shell: pwsh
       run: |
-        $expectedLine = (Get-Content "${{ inputs.archive_sha256_name }}" -Raw).Trim()
+        $expectedLine = (Get-Content "$env:TOBI_ARCHIVE_SHA256_NAME" -Raw).Trim()
         $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
-        $actualHash = (Get-FileHash "${{ inputs.archive_name }}" -Algorithm SHA256).Hash.ToLowerInvariant()
+        $actualHash = (Get-FileHash "$env:TOBI_ARCHIVE_NAME" -Algorithm SHA256).Hash.ToLowerInvariant()
 
         if ($actualHash -ne $expectedHash) {
           throw "Archive checksum mismatch. Expected $expectedHash but got $actualHash."
         }
 
     - name: Extract bundle
-      shell: powershell
+      shell: pwsh
       run: |
-        Expand-Archive -LiteralPath "${{ inputs.archive_name }}" -DestinationPath ".\tobi-bundle" -Force
+        $archiveName = "$env:TOBI_ARCHIVE_NAME"
+        $bundleDir = "tobi-bundle"
+
+        if (Test-Path -LiteralPath $bundleDir) {
+          Remove-Item -LiteralPath $bundleDir -Recurse -Force
+        }
+
+        New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
+
+        if ($archiveName.EndsWith(".zip", [System.StringComparison]::OrdinalIgnoreCase)) {
+          Expand-Archive -LiteralPath $archiveName -DestinationPath $bundleDir -Force
+        }
+        elseif ($archiveName.EndsWith(".tar.gz", [System.StringComparison]::OrdinalIgnoreCase)) {
+          tar -xzf $archiveName -C $bundleDir
+          if ($LASTEXITCODE -ne 0) {
+            throw "tar extraction failed for $archiveName"
+          }
+        }
+        else {
+          throw "Unsupported Tobi archive format: $archiveName"
+        }
 
     - name: Resolve extracted tobi executable
-      shell: powershell
+      shell: pwsh
       run: |
-        $exe = Get-ChildItem -Path ".\tobi-bundle" -Filter "tobi.exe" -Recurse | Select-Object -First 1
+        if ("$env:TOBI_RUNNER_OS" -eq "Windows") {
+          $exe = Get-ChildItem -Path "tobi-bundle" -Filter "tobi.exe" -Recurse | Select-Object -First 1
+          $exeLabel = "tobi.exe"
+        }
+        else {
+          $exe = Get-ChildItem -Path "tobi-bundle" -Filter "tobi" -File -Recurse | Select-Object -First 1
+          $exeLabel = "tobi"
+        }
 
         if ($null -eq $exe) {
-          throw "tobi.exe was not found anywhere under .\tobi-bundle after archive extraction."
+          throw "$exeLabel was not found anywhere under tobi-bundle after archive extraction."
+        }
+
+        if ("$env:TOBI_RUNNER_OS" -ne "Windows") {
+          chmod +x $exe.FullName
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to mark Tobi executable as executable: $($exe.FullName)"
+          }
         }
 
         "TOBI_EXE_PATH=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Run canon
       if: ${{ inputs.mode == 'canon' }}
-      shell: powershell
+      shell: pwsh
       run: |
         $inputPath = "${{ inputs.canon_input }}"
         if (-not (Test-Path -LiteralPath $inputPath)) {
@@ -184,7 +276,7 @@ runs:
 
     - name: Run golden
       if: ${{ inputs.mode == 'golden' }}
-      shell: powershell
+      shell: pwsh
       run: |
         $fixturesPath = "${{ inputs.golden_fixtures }}"
         if (-not (Test-Path -LiteralPath $fixturesPath)) {
