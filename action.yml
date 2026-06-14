@@ -235,41 +235,110 @@ runs:
       shell: pwsh
       run: |
         $archiveName = "$env:TOBI_ARCHIVE_NAME"
+        $stagingDir = "tobi-staging"
         $bundleDir = "tobi-bundle"
+
+        if (Test-Path -LiteralPath $stagingDir) {
+          Remove-Item -LiteralPath $stagingDir -Recurse -Force
+        }
 
         if (Test-Path -LiteralPath $bundleDir) {
           Remove-Item -LiteralPath $bundleDir -Recurse -Force
         }
 
+        New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null
         New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
 
-        if ($archiveName.EndsWith(".zip", [System.StringComparison]::OrdinalIgnoreCase)) {
-          Expand-Archive -LiteralPath $archiveName -DestinationPath $bundleDir -Force
-        }
-        elseif ($archiveName.EndsWith(".tar.gz", [System.StringComparison]::OrdinalIgnoreCase)) {
-          tar -xzf $archiveName -C $bundleDir
-          if ($LASTEXITCODE -ne 0) {
-            throw "tar extraction failed for $archiveName"
+        function Expand-TobiArchive {
+          param(
+            [Parameter(Mandatory = $true)]
+            [string] $Source,
+            [Parameter(Mandatory = $true)]
+            [string] $Destination
+          )
+
+          if ($Source.EndsWith(".zip", [System.StringComparison]::OrdinalIgnoreCase)) {
+            Expand-Archive -LiteralPath $Source -DestinationPath $Destination -Force
+          }
+          elseif ($Source.EndsWith(".tar.gz", [System.StringComparison]::OrdinalIgnoreCase)) {
+            tar -xzf $Source -C $Destination
+            if ($LASTEXITCODE -ne 0) {
+              throw "tar extraction failed for $Source"
+            }
+          }
+          else {
+            throw "Unsupported Tobi archive format: $Source"
           }
         }
-        else {
-          throw "Unsupported Tobi archive format: $archiveName"
+
+        function Find-TobiExecutable {
+          param(
+            [Parameter(Mandatory = $true)]
+            [string] $Root
+          )
+
+          if ("$env:TOBI_RUNNER_OS" -eq "Windows") {
+            return Get-ChildItem -Path $Root -Filter "tobi.exe" -File -Recurse | Select-Object -First 1
+          }
+
+          return Get-ChildItem -Path $Root -Filter "tobi" -File -Recurse | Select-Object -First 1
         }
+
+        Expand-TobiArchive -Source $archiveName -Destination $stagingDir
+
+        $directExe = Find-TobiExecutable -Root $stagingDir
+        if ($null -ne $directExe) {
+          "TOBI_BUNDLE_DIR=$stagingDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          return
+        }
+
+        $payloadArchive = Get-ChildItem -Path $stagingDir -File -Recurse |
+          Where-Object {
+            $_.Name.EndsWith(".zip", [System.StringComparison]::OrdinalIgnoreCase) -or
+            $_.Name.EndsWith(".tar.gz", [System.StringComparison]::OrdinalIgnoreCase)
+          } |
+          Sort-Object FullName |
+          Select-Object -First 1
+
+        if ($null -eq $payloadArchive) {
+          throw "No Tobi executable or nested platform archive was found under $stagingDir."
+        }
+
+        $payloadShaPath = "$($payloadArchive.FullName).sha256"
+        if (-not (Test-Path -LiteralPath $payloadShaPath)) {
+          throw "Nested platform archive checksum sidecar not found: $payloadShaPath"
+        }
+
+        $expectedLine = (Get-Content -LiteralPath $payloadShaPath -Raw).Trim()
+        $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
+        $actualHash = (Get-FileHash -LiteralPath $payloadArchive.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+
+        if ($actualHash -ne $expectedHash) {
+          throw "Nested platform archive checksum mismatch. Expected $expectedHash but got $actualHash."
+        }
+
+        Expand-TobiArchive -Source $payloadArchive.FullName -Destination $bundleDir
+        "TOBI_BUNDLE_DIR=$bundleDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Resolve extracted tobi executable
       shell: pwsh
       run: |
+        $bundleDir = "$env:TOBI_BUNDLE_DIR"
+        if ([string]::IsNullOrWhiteSpace($bundleDir)) {
+          $bundleDir = "tobi-bundle"
+        }
+
         if ("$env:TOBI_RUNNER_OS" -eq "Windows") {
-          $exe = Get-ChildItem -Path "tobi-bundle" -Filter "tobi.exe" -Recurse | Select-Object -First 1
+          $exe = Get-ChildItem -Path $bundleDir -Filter "tobi.exe" -File -Recurse | Select-Object -First 1
           $exeLabel = "tobi.exe"
         }
         else {
-          $exe = Get-ChildItem -Path "tobi-bundle" -Filter "tobi" -File -Recurse | Select-Object -First 1
+          $exe = Get-ChildItem -Path $bundleDir -Filter "tobi" -File -Recurse | Select-Object -First 1
           $exeLabel = "tobi"
         }
 
         if ($null -eq $exe) {
-          throw "$exeLabel was not found anywhere under tobi-bundle after archive extraction."
+          throw "$exeLabel was not found anywhere under $bundleDir after archive extraction."
         }
 
         if ("$env:TOBI_RUNNER_OS" -ne "Windows") {
