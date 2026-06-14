@@ -1,0 +1,50 @@
+name: Action smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canon:
+    name: ${{ matrix.os }} canon
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run local action canon
+        uses: ./
+        with:
+          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
+          mode: canon
+          canon_input: examples/sample.tsubasa
+
+  golden:
+    name: ${{ matrix.os }} golden
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run local action golden
+        uses: ./
+        with:
+          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
+          mode: golden
+          golden_fixtures: examples/golden/fixtures.json
