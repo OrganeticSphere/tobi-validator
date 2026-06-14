@@ -17,8 +17,7 @@ It is a public documentation and adoption repository.
 
 It is **not** the full development source repository.
 
-It is also **not** an unrestricted public binary distribution channel for the
-full Stage 1 product surface.
+It is also **not** an unrestricted public binary distribution channel for the full Stage 1 product surface.
 
 ---
 
@@ -61,7 +60,13 @@ Representative command shapes for the released validator line:
 .\tobi.exe golden .\examples\golden\fixtures.json
 ```
 
+```sh
+./tobi canon ./examples/sample.tsubasa
+./tobi golden ./examples/golden/fixtures.json
+```
+
 ---
+
 ### Proof-by-example repository
 
 See the first public flagship validator-first demo repository:
@@ -76,8 +81,7 @@ This repo shows:
 
 ## GitHub Action
 
-This repository also exposes the public GitHub Action wrapper for the released
-Stage 1 validator line.
+This repository exposes the public GitHub Action wrapper for the released Stage 1 validator line.
 
 The wrapper is public.
 
@@ -87,19 +91,41 @@ That means:
 
 - the public action wrapper lives here
 - the private binary artifact is delivered from `OrganeticSphere/tobi-validator-dist`
-- public onboarding uses TOBI_EVAL_TOKEN
-- internal/manual fallback may still use dist_token, but that is not the primary public path
+- public onboarding uses `TOBI_EVAL_TOKEN`
+- internal/manual fallback may still use `dist_token`
+- the action infers the release archive from the runner OS and architecture when no explicit archive override is provided
+
+Supported runner families for the controlled binary line:
+
+- Windows x86_64
+- Linux x86_64
+- macOS arm64
+- macOS x86_64
+
+Shipped Action modes:
+
+- `canon`
+- `golden`
+
+No `validate` mode is shipped.
 
 ### Required Secret
 
-Create a repository secret in the consuming GitHub repository:
+For public evaluation access, create a repository secret in the consuming GitHub repository:
 
 - `TOBI_EVAL_TOKEN`
 
 That secret should be the 7-day evaluation token issued by Organetic through the evaluation access path.
-#### --> https://organetic.ai/eval-access
 
-### Minimal `canon` Example
+https://organetic.ai/eval-access
+
+For controlled private distribution access, internal users may use:
+
+- `TOBI_DIST_TOKEN`
+
+That token must have read access to the private `OrganeticSphere/tobi-validator-dist` repository.
+
+### Minimal Linux `canon` Example
 
 ```yaml
 name: Tobi Canon
@@ -110,7 +136,7 @@ on:
 
 jobs:
   canon:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -122,7 +148,7 @@ jobs:
           canon_input: examples/sample.tsubasa
 ```
 
-### Minimal `golden` Example
+### Minimal Windows `golden` Example
 
 ```yaml
 name: Tobi Golden
@@ -145,6 +171,28 @@ jobs:
           golden_fixtures: examples/golden/fixtures.json
 ```
 
+### Controlled Distribution Example
+
+```yaml
+name: Tobi Canon With Private Distribution Token
+
+on:
+  workflow_dispatch:
+
+jobs:
+  canon:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: OrganeticSphere/tobi-validator@v1
+        with:
+          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
+          mode: canon
+          canon_input: examples/sample.tsubasa
+```
+
 ### Current v1 Reading
 
 Action v1 is intentionally narrow:
@@ -152,7 +200,9 @@ Action v1 is intentionally narrow:
 - `canon` mode
 - `golden` mode
 - evaluation-token access path for public onboarding
-- checksum verification required
+- private distribution-token fallback for controlled access
+- checksum verification required before extraction
+- OS-aware archive selection for Windows, Linux, and macOS
 - no runtime/backend/API/platform claims
 
 ---
@@ -187,11 +237,9 @@ The current public launch motion is GitHub-first:
 - a narrow GitHub workflow understanding path around the released validator CLI
 - a public action wrapper with controlled binary access
 
-The public repository is meant to help users understand the released Stage 1
-line and discuss workflow fit.
+The public repository is meant to help users understand the released Stage 1 line and discuss workflow fit.
 
-It should not be read as a promise that the full production usage path is
-available through unrestricted public binary download.
+It should not be read as a promise that the full production usage path is available through unrestricted public binary download.
 
 ---
 
@@ -215,8 +263,7 @@ Please keep reports exact and reproducible.
 
 ## Current Bottom Line
 
-This repository is the public GitHub entry surface for the released Stage 1 line
-of Organetic.
+This repository is the public GitHub entry surface for the released Stage 1 line of Organetic.
 
 In short:
 
