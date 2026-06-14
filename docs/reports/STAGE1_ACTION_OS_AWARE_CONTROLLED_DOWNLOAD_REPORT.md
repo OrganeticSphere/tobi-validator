@@ -7,41 +7,30 @@ Scope: public GitHub Action wrapper only
 
 ## Purpose
 
-Update the public GitHub Action wrapper so it no longer defaults to the Windows-only Stage 1 validator archive on Linux and macOS runners.
+Update and validate the public GitHub Action wrapper so Stage 1 validator delivery is OS-aware while preserving controlled access.
 
 The source/build repository remains private. The private distribution repository remains `OrganeticSphere/tobi-validator-dist`.
 
-## Previous behavior
+## Final behavior
 
-The Action accepted `eval_token`, `dist_token`, `version`, `dist_repo`, `archive_name`, and `archive_sha256_name`.
+When `archive_name` is omitted, the Action infers the controlled release bundle from runner OS and architecture.
 
-However, the default archive names were Windows-only:
-
-- `stage1-tobi-validator-v0.7.0-windows-x86_64.zip`
-- `stage1-tobi-validator-v0.7.0-windows-x86_64.zip.sha256`
-
-Extraction used `Expand-Archive`, and executable discovery searched only for `tobi.exe`.
-
-## New behavior
-
-When `archive_name` is omitted, the Action infers the release archive from runner OS and architecture.
-
-Mapping:
-
-| Runner OS | Runner arch | Archive |
+| Runner OS | Runner arch | Release asset |
 | --- | --- | --- |
-| Windows | X64 | `stage1-tobi-validator-v0.7.0-windows-x86_64.zip` |
-| Linux | X64 | `stage1-tobi-validator-v0.7.0-linux-x86_64.tar.gz` |
-| macOS | ARM64 | `stage1-tobi-validator-v0.7.0-macos-arm64.tar.gz` |
-| macOS | X64 | `stage1-tobi-validator-v0.7.0-macos-x86_64.tar.gz` |
+| Windows | X64 | `windows-x86_64-release-archive.zip` |
+| Linux | X64 | `linux-x86_64-release-archive.zip` |
+| macOS | ARM64 | `macos-arm64-release-archive.zip` |
+| macOS | X64 | `macos-x86_64-release-archive.zip` |
 
-When `archive_sha256_name` is omitted, the Action resolves it as:
+Explicit `archive_name` overrides remain supported.
+
+When `archive_sha256_name` is omitted, the Action still resolves the sidecar name as:
 
 ```text
 <archive_name>.sha256
 ```
 
-Explicit `archive_name` and `archive_sha256_name` overrides remain supported.
+Explicit `archive_sha256_name` overrides remain supported. For direct `dist_token` release downloads, the Action also supports GitHub release asset `sha256:` digest metadata when the release asset exists but no separate sidecar asset exists.
 
 ## Controlled delivery preserved
 
@@ -58,9 +47,17 @@ OrganeticSphere/tobi-validator-dist
 
 No public source/build repository assumption was introduced.
 
-## Extraction and executable resolution
+## Checksum and extraction behavior
 
-Supported archive formats:
+Checksum verification still runs before extraction.
+
+For direct `dist_token` downloads:
+
+1. The downloaded controlled release bundle is verified with the GitHub release asset `sha256:` digest when no sidecar asset is present.
+2. If the controlled bundle contains a nested platform archive and `.sha256` sidecar, the nested archive is verified before nested extraction.
+3. Only after checksum verification does the Action extract the archive that contains the executable.
+
+Supported extraction formats:
 
 - `.zip`
 - `.tar.gz`
@@ -81,40 +78,120 @@ Allowed Action modes remain:
 
 No `validate` command or mode was added.
 
-## Files changed
+## Smoke workflow
 
-- `action.yml`
-- `README.md`
-- `docs/STAGE1_GITHUB_ACTION_STARTER.md`
-- `examples/github-actions/stage1_tobi_validator_example.yml`
-- `docs/reports/STAGE1_ACTION_OS_AWARE_CONTROLLED_DOWNLOAD_REPORT.md`
+Added:
 
-## Validation performed by inspection
+- `.github/workflows/action-smoke.yml`
 
-Verified in patch content:
+Final workflow trigger:
 
-- Action keeps `eval_token`
-- Action keeps `dist_token`
-- Action keeps `dist_repo`
-- Action keeps `version`
-- Action verifies SHA256 before extraction
-- Action supports `.zip` and `.tar.gz`
-- Action resolves `tobi.exe` on Windows and `tobi` on Linux/macOS
-- Action still only dispatches `canon` and `golden`
-- README does not claim public source/build publication
-- README preserves controlled binary delivery framing
+- `workflow_dispatch`
+
+Smoke cases:
+
+- `canon` against `examples/sample.tsubasa`
+- `golden` against `examples/golden/fixtures.json`
+
+The workflow uses the local PR-branch action:
+
+```yaml
+uses: ./
+```
+
+The workflow uses repository secret:
+
+```text
+TOBI_DIST_TOKEN
+```
+
+No token value is hardcoded.
+
+## GitHub Actions smoke result
+
+Run URL:
+
+- `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503508045`
+
+Run event:
+
+- `push`
+
+Run head SHA:
+
+- `a83166f2c44b435c518da7a1fd18ffc7ecaa6c60`
+
+Pre-merge execution note:
+
+- Direct `workflow_dispatch` through the GitHub API returned `404` while the new workflow existed only on the PR branch and not on the default branch.
+- A branch-scoped `push` trigger was used during validation to execute the new workflow before merge.
+- The final workflow file is left as `workflow_dispatch`.
+
+Jobs run:
+
+| Job | Status | Job URL |
+| --- | --- | --- |
+| `ubuntu-latest canon` | Passed | `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503508045/job/81290515331` |
+| `ubuntu-latest golden` | Passed | `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503508045/job/81290515321` |
+| `windows-latest canon` | Passed | `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503508045/job/81290515330` |
+| `windows-latest golden` | Passed | `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503508045/job/81290515355` |
+
+Required passing jobs:
+
+- `ubuntu-latest canon`: passed
+- `ubuntu-latest golden`: passed
+- `windows-latest canon`: passed
+- `windows-latest golden`: passed
+
+## Fixes made after smoke failures
+
+Initial smoke run:
+
+- `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503247987`
+- Result: failed
+- Cause: inferred asset names did not match the current private distribution release assets.
+
+Second smoke run:
+
+- `https://github.com/OrganeticSphere/tobi-validator/actions/runs/27503398720`
+- Result: failed
+- Cause: release assets were controlled outer bundles containing nested platform archives; the Action extracted only the outer bundle and then could not find `tobi.exe` / `tobi`.
+
+Fixes:
+
+- Updated default OS/arch mapping to the current controlled release bundle asset names.
+- Preserved explicit `archive_name` and `archive_sha256_name` overrides.
+- Added direct-release checksum support through GitHub release asset `sha256:` digest metadata when no sidecar asset is present.
+- Added nested platform archive detection.
+- Added nested `.sha256` verification before extracting nested platform archives.
+- Kept `.zip` extraction support.
+- Kept `.tar.gz` extraction support.
+- Kept Windows `tobi.exe` and Linux/macOS `tobi` executable resolution.
 
 ## Not run
 
-The following require repository-side workflow execution and/or secrets and were not run through this connector-only edit:
+- `macos-latest canon`
+- `macos-latest golden`
+- evaluation broker smoke with `eval_token`
+- explicit `archive_name` / `archive_sha256_name` override runtime smoke
 
-- GitHub Actions smoke workflow with `TOBI_DIST_TOKEN`
-- `ubuntu-latest` action smoke
-- `windows-latest` action smoke
-- `macos-latest` action smoke
-- evaluation broker path smoke with `eval_token`
+## Validation by inspection
 
-An attempt to add a repository smoke workflow using a repository secret was blocked by the available tooling safety layer. That workflow should be added or executed by a local agent with repository workflow-writing capability.
+Verified in `action.yml`:
+
+- Composite action syntax remains `runs.using: composite`.
+- All composite `run` steps use `shell: pwsh`.
+- `RUNNER_OS` values handled: `Windows`, `Linux`, `macOS`.
+- `RUNNER_ARCH` values handled for supported releases: `X64`, plus macOS `ARM64`.
+- Windows `.zip` extraction path is present and passed smoke.
+- Linux `.tar.gz` nested extraction path is present and passed smoke.
+- `.zip` nested extraction path is present and passed Windows smoke.
+- `tobi.exe` resolution passed Windows smoke.
+- `tobi` resolution passed Ubuntu smoke.
+- Checksum verification runs before outer extraction and before nested payload extraction.
+- `eval_token` downloads use the resolved archive and checksum sidecar names.
+- `dist_token` downloads use the resolved archive name and either the resolved checksum sidecar or GitHub release asset digest metadata.
+- Explicit archive and checksum-name overrides remain wired through the same inputs.
 
 ## Product and security boundary confirmation
 
@@ -129,3 +206,9 @@ This change does not add or expose:
 - receipt/bundle/suite/outcome-trace schema
 - `.tobi-sync` protocol
 - `validate` command
+
+Controlled delivery remains intact:
+
+- The Action still requires `eval_token` or `dist_token`.
+- The default distribution repository remains private.
+- No unrestricted public binary delivery path was introduced.

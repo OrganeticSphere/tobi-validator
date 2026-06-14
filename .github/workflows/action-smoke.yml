@@ -2,14 +2,6 @@ name: Action smoke
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/assistant/os-aware-controlled-download
-    paths:
-      - action.yml
-      - .github/workflows/action-smoke.yml
-      - examples/sample.tsubasa
-      - examples/golden/fixtures.json
 
 permissions:
   contents: read
