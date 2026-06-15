@@ -47,6 +47,7 @@ For the shortest public path:
 
 - [Stage 1 Quickstart](./docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md)
 - [Finding Your First Reasoning Artifacts](./docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md)
+- [Agent workflow governance vs reasoning verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
 - [Tsubasa Stage 1 Public Syntax And Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
 - [Stage 1 Install And Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
 - [Stage 1 Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
