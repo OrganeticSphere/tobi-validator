@@ -1,7 +1,7 @@
 # Agent workflow governance vs reasoning verification
 
-Status: public-safe positioning note
-Scope: Stage 1 / Tobi Validator public repository documentation
+Status: public-safe positioning note  
+Scope: Stage 1 / Tobi Validator public repository documentation  
 Product line: AI Verification Engine / Tobi Validator
 
 ## Purpose
@@ -27,7 +27,7 @@ A workflow-governance system can answer questions such as:
 - Did a human approve promotion?
 - Was an event log or evidence pack produced?
 
-Tobi Validator answers a narrower and stricter question:
+Tobi Validator answers a narrower artifact-boundary question:
 
 ```text
 Can this reasoning artifact become canonical, reproducible, and validator-checkable?
@@ -45,7 +45,7 @@ Operational evidence may include:
 - selected branch reports,
 - human approval records.
 
-Validator-grounded artifact evidence includes:
+Validator-grounded artifact evidence may include:
 
 - accepted or rejected validator outcome,
 - canonical ASCII output,
@@ -55,15 +55,15 @@ Validator-grounded artifact evidence includes:
 
 Both can be useful. They should not be confused.
 
-## Why this matters
+## Boundary note
 
-A workflow can be well-governed and still contain an invalid reasoning artifact.
+`_h` is compatibility identity only. It is not proof of truth.
 
-A human can approve a workflow, while the underlying artifact still fails validation.
+Validator acceptance is not consensus by itself.
 
-A hash-chained event log can prove that something happened in order, but it does not prove that the reasoning artifact is canonical or validator-checkable.
+A hash-chained event log can show that events were recorded in sequence, but it does not prove that the reasoning artifact is canonical or validator-checkable.
 
-Tobi is designed for the artifact boundary: before an output becomes operational trust evidence, the artifact should be accepted, rejected, or diagnosed by the validator.
+Human approval can authorize a workflow, but it is not deterministic validation.
 
 ## How Tobi fits with agent governance systems
 
@@ -71,10 +71,10 @@ Tobi can be used inside agent-governance or agent-factory systems as a gate:
 
 ```text
 agent produces artifact
--> Tobi validates artifact
--> canonical ASCII / _h / diagnostics emitted
--> governance system records validator result
--> workflow continues, blocks, or escalates
+→ Tobi validates artifact
+→ canonical ASCII / _h / diagnostics emitted
+→ governance system records validator result
+→ workflow continues, blocks, or escalates
 ```
 
 This makes Tobi complementary to agent workflow governance.
@@ -86,7 +86,7 @@ They govern agent delivery.
 We validate reasoning artifacts.
 
 They produce operational evidence.
-We produce validator-grounded canonical evidence.
+We produce validator-grounded artifact evidence.
 
 They gate workflow completion.
 We gate artifact trust before action.
