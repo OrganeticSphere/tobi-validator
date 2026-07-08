@@ -105,6 +105,28 @@ Use these questions:
 
 If the answer is “yes” to several of these, the artifact is probably worth testing.
 
+## Start from the public conformance corpus
+
+You can start from the public Stage 1 conformance corpus:
+
+- [OrganeticSphere/tsubasa-stage1-conformance](https://github.com/OrganeticSphere/tsubasa-stage1-conformance)
+
+The corpus gives you known-good public `.tsubasa` examples to inspect. You can
+compare your own artifacts against its style, size, and public Stage 1
+boundaries before deciding what belongs in your own case set.
+
+Use the public
+[manifest](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/corpus/manifest.v0.1.json)
+and
+[verification report](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/verification/TOBI_RUNS_v0.1.md)
+as examples of how expected outputs should be recorded.
+
+Do not copy unverified expectations into your own final manifest. Any final
+canonical output, diagnostic, exit code, or `_h` value must come from a real
+Tobi Validator run.
+
+Idempotence remains pending in v0.1 and should not be treated as verified.
+
 ## The easiest first family to build
 
 A good first family has only 3–7 cases.
