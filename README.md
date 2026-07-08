@@ -49,6 +49,7 @@ For the shortest public path:
 - [Finding Your First Reasoning Artifacts](./docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md)
 - [Agent workflow governance vs reasoning verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
 - [Tsubasa Stage 1 Public Syntax And Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
+- [Open Stage 1 Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md)
 - [Stage 1 Install And Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
 - [Stage 1 Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
 - [Stage 1 Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
@@ -65,6 +66,31 @@ Representative command shapes for the released validator line:
 ./tobi canon ./examples/sample.tsubasa
 ./tobi golden ./examples/golden/fixtures.json
 ```
+
+---
+
+### Open Stage 1 conformance corpus
+
+The public Stage 1 conformance corpus for Tsubasa artifacts is available at
+[OrganeticSphere/tsubasa-stage1-conformance](https://github.com/OrganeticSphere/tsubasa-stage1-conformance).
+It provides public-safe `.tsubasa` examples, manifest records, verified
+canonical outputs, diagnostics, and coverage limitations. The corpus makes
+Stage 1 validator behavior inspectable without publishing the private Tobi
+Validator implementation.
+
+Read the local overview in
+[Open Stage 1 Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md), or inspect
+the public corpus
+[manifest](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/corpus/manifest.v0.1.json),
+[verification report](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/verification/TOBI_RUNS_v0.1.md),
+and
+[coverage limitations](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/COVERAGE_LIMITATIONS.md).
+
+The public corpus can be reviewed independently. Running the validator still
+requires authorized Tobi Validator access through the
+[evaluation access path](https://organetic.ai/eval-access) or controlled
+distribution access. It should not be read as free unrestricted validator
+execution.
 
 ---
 
