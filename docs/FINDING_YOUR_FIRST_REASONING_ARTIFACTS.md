@@ -188,7 +188,7 @@ The goal is not just to reject bad input.
 
 The deeper value is to move reasoning from:
 
-- opaque
+- trace-like
 - informal
 - hard to compare
 - easy to drift
