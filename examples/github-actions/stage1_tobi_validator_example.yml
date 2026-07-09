@@ -33,18 +33,3 @@ jobs:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: examples/golden/fixtures.json
-
-  canon-with-private-distribution-token:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Run Tobi canon through private distribution access
-        uses: OrganeticSphere/tobi-validator@v1
-        with:
-          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
-          mode: canon
-          canon_input: examples/sample.tsubasa

@@ -24,7 +24,7 @@ jobs:
       - name: Run local action canon
         uses: ./
         with:
-          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
+          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: examples/sample.tsubasa
 
@@ -45,6 +45,6 @@ jobs:
       - name: Run local action golden
         uses: ./
         with:
-          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
+          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: examples/golden/fixtures.json

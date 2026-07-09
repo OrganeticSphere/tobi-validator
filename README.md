@@ -88,8 +88,8 @@ and
 
 The public corpus can be reviewed independently. Running the validator still
 requires authorized Tobi Validator access through the
-[evaluation access path](https://organetic.ai/eval-access) or controlled
-distribution access. It should not be read as free unrestricted validator
+[evaluation access path](https://organetic.ai/eval-access). It should not be
+read as free unrestricted validator
 execution.
 
 ---
@@ -117,9 +117,9 @@ The binary delivery path is controlled and separate.
 That means:
 
 - the public action wrapper lives here
-- the private binary artifact is delivered from `OrganeticSphere/tobi-validator-dist`
-- public onboarding uses `TOBI_EVAL_TOKEN`
-- internal/manual fallback may still use `dist_token`
+- public evaluation users use `TOBI_EVAL_TOKEN` issued through Organetic evaluation access
+- private distribution credentials are internal to Organetic and are not required in customer repositories
+- private distribution access is handled internally by Organetic's evaluation broker
 - the action infers the release archive from the runner OS and architecture when no explicit archive override is provided
 
 Supported runner families for the controlled binary line:
@@ -145,12 +145,6 @@ For public evaluation access, create a repository secret in the consuming GitHub
 That secret should be the 7-day evaluation token issued by Organetic through the evaluation access path.
 
 https://organetic.ai/eval-access
-
-For controlled private distribution access, internal users may use:
-
-- `TOBI_DIST_TOKEN`
-
-That token must have read access to the private `OrganeticSphere/tobi-validator-dist` repository.
 
 ### Minimal Linux `canon` Example
 
@@ -198,36 +192,14 @@ jobs:
           golden_fixtures: examples/golden/fixtures.json
 ```
 
-### Controlled Distribution Example
-
-```yaml
-name: Tobi Canon With Private Distribution Token
-
-on:
-  workflow_dispatch:
-
-jobs:
-  canon:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: OrganeticSphere/tobi-validator@v1
-        with:
-          dist_token: ${{ secrets.TOBI_DIST_TOKEN }}
-          mode: canon
-          canon_input: examples/sample.tsubasa
-```
-
 ### Current v1 Reading
 
 Action v1 is intentionally narrow:
 
 - `canon` mode
 - `golden` mode
-- evaluation-token access path for public onboarding
-- private distribution-token fallback for controlled access
+- evaluation-token access path for public onboarding and customer repositories
+- private distribution credentials handled internally by Organetic's evaluation broker
 - checksum verification required before extraction
 - OS-aware archive selection for Windows, Linux, and macOS
 - no runtime/backend/API/platform claims
