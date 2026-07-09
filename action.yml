@@ -1,5 +1,5 @@
 name: "Organetic Tobi Validator"
-description: "GitHub Action wrapper for the released Stage 1 Tobi Validator line with controlled evaluation or private artifact access"
+description: "GitHub Action wrapper for the released Stage 1 Tobi Validator line with controlled evaluation access"
 
 branding:
   icon: "shield"
@@ -7,19 +7,12 @@ branding:
 
 inputs:
   eval_token:
-    description: "7-day evaluation token issued by Organetic evaluation broker"
-    required: false
-  dist_token:
-    description: "Read-only token with access to the private OrganeticSphere/tobi-validator-dist repository"
-    required: false
+    description: "Evaluation token issued through Organetic evaluation access"
+    required: true
   version:
-    description: "Release tag in OrganeticSphere/tobi-validator-dist"
+    description: "Stage 1 release tag requested through the Organetic evaluation broker"
     required: false
     default: "stage1-tobi-validator-v0.7.0"
-  dist_repo:
-    description: "Private distribution repository containing the validator release assets"
-    required: false
-    default: "OrganeticSphere/tobi-validator-dist"
   archive_name:
     description: "Optional explicit bundle archive name. When omitted, the action infers the archive from runner OS and architecture."
     required: false
@@ -48,10 +41,9 @@ runs:
       run: |
         $mode = "${{ inputs.mode }}".ToLowerInvariant()
         $evalToken = "${{ inputs.eval_token }}"
-        $distToken = "${{ inputs.dist_token }}"
 
-        if ([string]::IsNullOrWhiteSpace($evalToken) -and [string]::IsNullOrWhiteSpace($distToken)) {
-          throw "Provide either 'eval_token' or 'dist_token'."
+        if ([string]::IsNullOrWhiteSpace($evalToken)) {
+          throw "Provide eval_token issued through Organetic evaluation access."
         }
 
         if ($mode -ne "canon" -and $mode -ne "golden") {
@@ -117,7 +109,6 @@ runs:
         Write-Host "Resolved Tobi checksum sidecar: $shaName"
 
     - name: Download bundle via evaluation broker
-      if: ${{ inputs.eval_token != '' }}
       shell: pwsh
       run: |
         $brokerUrl = "https://api.organetic.ai/api/eval/download"
@@ -150,80 +141,11 @@ runs:
         Invoke-WebRequest -Method POST -Uri $brokerUrl -Headers $headers -Body $archiveBody -OutFile $archiveName
         Invoke-WebRequest -Method POST -Uri $brokerUrl -Headers $headers -Body $shaBody -OutFile $shaName
 
-    - name: Resolve private release directly
-      if: ${{ inputs.eval_token == '' && inputs.dist_token != '' }}
-      shell: pwsh
-      run: |
-        $headers = @{
-          Authorization = "Bearer ${{ inputs.dist_token }}"
-          Accept = "application/vnd.github+json"
-          "X-GitHub-Api-Version" = "2022-11-28"
-        }
-
-        $repo = "${{ inputs.dist_repo }}"
-        $tag = "${{ inputs.version }}"
-        $releaseUrl = "https://api.github.com/repos/$repo/releases/tags/$tag"
-
-        try {
-          $release = Invoke-RestMethod -Uri $releaseUrl -Headers $headers -Method Get -ErrorAction Stop
-        }
-        catch {
-          throw "Failed to resolve private release '$tag' in '$repo'. Check that the tag exists and that 'dist_token' has read access."
-        }
-
-        $archiveName = "$env:TOBI_ARCHIVE_NAME"
-        $shaName = "$env:TOBI_ARCHIVE_SHA256_NAME"
-        $explicitSha = "${{ inputs.archive_sha256_name }}"
-
-        $archiveAsset = $release.assets | Where-Object { $_.name -eq $archiveName } | Select-Object -First 1
-        $shaAsset = $release.assets | Where-Object { $_.name -eq $shaName } | Select-Object -First 1
-
-        if ($null -eq $archiveAsset) {
-          throw "Release asset not found: $archiveName"
-        }
-
-        "TOBI_ASSET_URL=$($archiveAsset.url)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-        if ($null -ne $shaAsset) {
-          "TOBI_SHA_ASSET_URL=$($shaAsset.url)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        }
-        elseif ([string]::IsNullOrWhiteSpace($explicitSha) -and "$($archiveAsset.digest)" -match '^sha256:([0-9a-fA-F]{64})$') {
-          "TOBI_EXPECTED_SHA256=$($matches[1].ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "Using GitHub release asset digest for checksum verification."
-        }
-        elseif ([string]::IsNullOrWhiteSpace($explicitSha)) {
-          throw "Release checksum not found for $archiveName. Expected sidecar '$shaName' or a GitHub release asset digest."
-        }
-        else {
-          throw "Release asset not found: $shaName"
-        }
-
-    - name: Download private bundle assets directly
-      if: ${{ inputs.eval_token == '' && inputs.dist_token != '' }}
-      shell: pwsh
-      run: |
-        $downloadHeaders = @{
-          Authorization = "Bearer ${{ inputs.dist_token }}"
-          Accept = "application/octet-stream"
-          "X-GitHub-Api-Version" = "2022-11-28"
-        }
-
-        Invoke-WebRequest -Uri $env:TOBI_ASSET_URL -Headers $downloadHeaders -OutFile "$env:TOBI_ARCHIVE_NAME"
-
-        if (-not [string]::IsNullOrWhiteSpace("$env:TOBI_SHA_ASSET_URL")) {
-          Invoke-WebRequest -Uri $env:TOBI_SHA_ASSET_URL -Headers $downloadHeaders -OutFile "$env:TOBI_ARCHIVE_SHA256_NAME"
-        }
-
     - name: Verify bundle checksum
       shell: pwsh
       run: |
-        if (-not [string]::IsNullOrWhiteSpace("$env:TOBI_EXPECTED_SHA256")) {
-          $expectedHash = "$env:TOBI_EXPECTED_SHA256".ToLowerInvariant()
-        }
-        else {
-          $expectedLine = (Get-Content "$env:TOBI_ARCHIVE_SHA256_NAME" -Raw).Trim()
-          $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
-        }
+        $expectedLine = (Get-Content "$env:TOBI_ARCHIVE_SHA256_NAME" -Raw).Trim()
+        $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
 
         $actualHash = (Get-FileHash "$env:TOBI_ARCHIVE_NAME" -Algorithm SHA256).Hash.ToLowerInvariant()
 

@@ -34,7 +34,7 @@ This starter uses only the released Stage 1 CLI truth:
   - `examples/sample.tsubasa`
   - `examples/golden/fixtures.json`
 - deterministic validator exits for pass/fail handling in CI
-- controlled binary access through `eval_token` or `dist_token`
+- controlled binary access through `eval_token`
 - OS-aware archive selection by the Action wrapper
 
 Reference command shapes:
@@ -68,7 +68,7 @@ The Action wrapper is public. The validator binary delivery path is controlled a
 A narrow Stage 1 GitHub workflow should:
 
 1. check out the repository that owns the files you want to validate
-2. obtain access through the public evaluation access path using `TOBI_EVAL_TOKEN`, or through controlled private distribution using `TOBI_DIST_TOKEN`
+2. request evaluation access from Organetic and store the issued token as `TOBI_EVAL_TOKEN`
 3. let the Action infer the platform archive unless an explicit override is required
 4. verify integrity material before use
 5. run the released CLI, not an invented wrapper surface
@@ -90,14 +90,8 @@ A narrow Stage 1 GitHub workflow should:
 - request a 7-day evaluation token from Organetic
 - store it as `TOBI_EVAL_TOKEN`
 - use `OrganeticSphere/tobi-validator@v1`
+- pass `eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}`
 - run `canon` and/or `golden`
-
-## Controlled internal distribution path
-
-- create a read-only token with access to the private `OrganeticSphere/tobi-validator-dist` repository
-- store it as `TOBI_DIST_TOKEN`
-- use `dist_token: ${{ secrets.TOBI_DIST_TOKEN }}`
-- do not hardcode release asset URLs
 
 ## If you need the most complete current public-safe syntax and authoring guide for repository-owned artifacts, read
 
