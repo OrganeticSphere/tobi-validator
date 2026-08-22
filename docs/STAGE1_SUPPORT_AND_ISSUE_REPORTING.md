@@ -1,146 +1,141 @@
-# Stage 1 Support And Issue Reporting
+# Tobi Validator Support And Issue Reporting
 
-Project: Organetic Sphere  
-Component: Tobi  
-Product: AI Verification Engine / Tobi Validator  
-Scope: public Stage 1 support and issue-reporting guidance  
-Date basis: 2026-04-14
+Project: Organetic Sphere
+Component: Tobi Validator
+Descriptor: Reasoning Artifact Validator
+Scope: public support and issue-reporting guidance
+Date basis: 2026-08-23
 
 ## What This Document Is
 
-This document explains how to report problems and workflow-fit friction for the
-currently released Stage 1 line of:
+This document explains how to report problems and workflow-fit friction for
+Tobi Validator.
 
-- `AI Verification Engine / Tobi Validator`
-
-The current public launch motion is GitHub-first.
+The current public adoption path is GitHub-first.
 
 This document is for:
 
 - reproducible bug reports
 - diagnostics-oriented failure reporting
 - workflow-fit questions grounded in the released validator CLI
-- docs clarification requests
+- documentation clarification requests
 
 This document is not a promise of:
 
 - runtime/backend support
-- verification API support
+- public verification API support
 - broader platform support
-- automatic support for later workflow channels as already active public launch paths
+- automatic support for later Organetic product surfaces
 
-## Current Released Stage 1 Surface
+## Current Released Tobi Validator Surface
 
-Keep reports narrowly grounded in the currently released surface:
+Keep reports narrowly grounded in:
 
 - installable `tobi` CLI
+- authored Tsubasa source validation
+- Tsubasa canonicalization through Tobi
 - canonical ASCII output
 - current `_h` compatibility identity
 - deterministic diagnostics
 - `golden` conformance execution
-- thin packaging and install / usage framing
+- thin packaging and workflow usage
 
 ## Start Here Before Reporting
 
-Before opening an issue, first check:
+Check:
 
 - `docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md`
 - `docs/STAGE1_INSTALL_AND_USAGE.md`
 - `docs/STAGE1_DIAGNOSTICS_REFERENCE.md`
 - `docs/STAGE1_GITHUB_ACTION_STARTER.md`
 
-If your question is about where the validator fits in a GitHub workflow, use the
-workflow-fit issue template rather than a generic bug report.
+The physical filenames retain legacy spelling for link stability. Their visible
+titles and current product language use Tobi Validator.
+
+If your question concerns GitHub workflow placement, use the workflow-fit issue
+template rather than a generic bug report.
 
 ## What To Report
 
 Appropriate public reports include:
 
 - a command that failed unexpectedly
-- a diagnostics message that is unclear
+- a diagnostic message that is unclear
 - a fixture mismatch in `golden`
-- docs wording that does not match observed released behavior
+- documentation that does not match observed released behavior
 - a narrow GitHub workflow-fit question around the released validator CLI
 
 ## What Not To Report As If Already Released
 
-Do not file support requests as if the following are already part of the
-released public surface:
+Do not file support requests as if the following are already available:
 
 - runtime execution
 - backend execution
-- verification API
+- public verification API
 - platform SDK
 - broad GitLab / Nextflow / Snakemake rollout
 - broader Organetic platform availability
-
-Those are outside the current Stage 1 public reading.
+- unrestricted public access to the production validator implementation
 
 ## How To Write A Good Bug Report
 
-A useful bug report should include:
+Include:
 
 - exact release version / tag
 - exact command run
-- exact file or fixture used
+- exact source file or fixture used
 - exact observed output
 - expected behavior
 - actual behavior
 - diagnostic code and span if present
 - whether the issue is reproducible
 
-Good reports are concrete.
-Vague reports create noise and slow support.
+Good reports are concrete. Vague reports create noise and slow support.
 
 ## How To Write A Good Workflow-Fit Question
 
-A useful workflow-fit question should include:
+Include:
 
 - what workflow you are trying to support
 - whether this is local or GitHub CI usage
-- where you think `canon` or `golden` might belong
-- what is unclear in the current docs or starter materials
-- whether you are asking about current Stage 1 fit rather than future channels
+- where you think `canon` or `golden` belongs
+- what is unclear in current docs or starter materials
+- whether you are asking about current Tobi Validator fit rather than future products
 
 ## Recommended Issue Paths
 
 Use:
 
-- `Bug report` for reproducible Stage 1 issues
+- `Bug report` for reproducible Tobi Validator issues
 - `Workflow fit discussion` for GitHub-first workflow-fit questions
 
-If the matter is security-sensitive, do not open a detailed public issue.
-Use the private contact path described in:
-
-- `SECURITY.md`
+For security-sensitive matters, do not open a detailed public issue. Use the
+private contact path in `SECURITY.md`.
 
 ## Scope Reminder
 
-This repository is the public GitHub distribution surface for the released Stage 1 line.
+This repository is the public GitHub documentation, Action-wrapper, and
+adoption surface for Tobi Validator. It is not the full development source
+repository.
 
-It is not the full development source repository.
+Reports should stay grounded in:
 
-Reports should stay grounded in the public distribution surface:
 - docs
 - examples
-- released binaries
+- controlled validator delivery
+- released CLI behavior
 - workflow adoption materials
 
 ## Current Bottom Line
 
 Use public issues for:
 
-- reproducible released Stage 1 problems
+- reproducible Tobi Validator problems
 - diagnostics questions
-- docs mismatches
+- documentation mismatches
 - GitHub-first workflow-fit questions
 
-Do not use public issues to treat unreleased runtime/backend/API/platform
-surfaces as if they were already part of the public Stage 1 product.
+Do not use public issues to treat unreleased runtime, backend, API, platform, or
+future-product surfaces as if they were already available.
 
-In short:
-
-- keep reports narrow
-- keep reports exact
-- keep reports reproducible
-- keep workflow-fit questions GitHub-first
+Keep reports narrow, exact, and reproducible.
