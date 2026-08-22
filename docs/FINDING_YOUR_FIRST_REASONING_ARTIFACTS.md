@@ -1,8 +1,8 @@
-# FINDING YOUR FIRST REASONING ARTIFACTS
+# Finding Your First Reasoning Artifacts
 
-Status: public-safe explainer draft  
-Scope: first discovery guide for teams exploring validator-backed reasoning validation  
-Product line: AI Verification Engine / Tobi Validator
+Status: public-safe explainer draft
+Scope: first discovery guide for teams exploring validator-backed reasoning artifacts
+Product: Tobi Validator — Reasoning Artifact Validator
 
 ## Purpose
 
@@ -14,11 +14,11 @@ It is written for teams that already use AI tools, agent workflows, CI gates,
 scientific pipelines, or review processes, but do not yet have a clean folder
 called “reasoning artifacts”.
 
-## First principle
+## First Principle
 
 A reasoning artifact is **not** just any smart-looking text.
 
-A reasoning artifact is something that is:
+A useful first candidate is:
 
 - explicit
 - reviewable
@@ -27,195 +27,208 @@ A reasoning artifact is something that is:
 - meaningful enough to accept or reject
 - useful enough to check in CI or a workflow gate
 
-If pass/fail on that artifact would change what your team does, it is a strong candidate.
+If pass/fail on that artifact would change what your team does, it is a strong
+candidate.
 
-## What counts as a good first reasoning artifact
+For Tobi Validator, the artifact begins as authored Tsubasa source:
+
+```text
+authored Tsubasa source
+→ validation and Tsubasa canonicalization through Tobi
+→ canonical artifact + _h, or deterministic diagnostics
+```
+
+Authored source is not assumed to be canonical. Tsubasa owns the language and
+canonicalization contract; Tobi implements that contract.
+
+## Good First Candidates
 
 Good first candidates usually look like:
 
 - a small explicit decision rule
 - a boundary case your team argues about often
-- a “should pass” vs “should fail” example pair
+- a “should pass” vs “should reject” example pair
 - a canonicalization-sensitive example
 - a regression case from a previous mistake
-- an artifact that should remain equivalent across surface spelling changes
+- source forms that should converge to the same canonical representation
 
-## What does **not** count
+## Weak Or Bad First Candidates
 
-These are weak or bad first candidates:
+Avoid:
 
 - broad chat transcripts
 - hidden chain-of-thought claims
 - giant logs with no clear decision boundary
-- vague philosophy about “good reasoning”
+- vague philosophy about good reasoning
 - a whole agent session with no stable artifact surface
-- invented pseudo-syntax that your validator cannot parse
-- imagined runtime behavior that your current product does not expose
+- invented pseudo-syntax Tobi cannot parse
+- imagined runtime behavior the current product does not expose
 
-## Where to look inside your workflow
+## Where To Look Inside Your Workflow
 
-Most teams already have reasoning-artifact candidates, just under different names.
+Most teams already have candidates under different names.
 
-### In CI / pull request workflows
+### In CI / Pull-Request Workflows
+
 Look for:
 
 - pass/fail gate logic
-- release blocking conditions
+- release-blocking conditions
 - artifact checks before merge
 - policy checks
 - validation scripts
 - expected-output comparisons
 
-### In agent workflows
+### In Agent Workflows
+
 Look for:
 
-- explicit agent outputs that are meant to be reused
-- decision summaries
+- explicit agent outputs intended for reuse
+- decision summaries that need a stable handoff
 - approved action plans
 - structured intermediate outputs
-- cases where one agent must justify something to another
+- cases where one agent must provide evidence to another
 
-### In scientific or reproducible workflows
+### In Scientific Or Reproducible Workflows
+
 Look for:
 
 - acceptance criteria
 - reject criteria
 - reproducibility-sensitive artifacts
-- explicit “same meaning / different spelling” problems
-- boundary cases around malformed or ambiguous inputs
+- same-meaning / different-surface problems
+- boundary cases around malformed or ambiguous source
 
-### In manual review
+### In Manual Review
+
 Look for:
 
 - things reviewers repeatedly argue about
 - edge cases that force human intervention
-- cases where “this should pass” and “this should fail” are not written down clearly
-- regressions that happened because meaning drifted across handoff
+- cases where pass and reject expectations are not written down
+- regressions caused by meaning drift across a handoff
 
-## What to ask yourself
+## Questions To Ask
 
-Use these questions:
-
-1. Does this artifact have a clear pass/fail boundary?
+1. Does this candidate have a clear pass/reject boundary?
 2. Would a wrong acceptance or rejection matter?
-3. Could we save this artifact and compare it later?
-4. Could two surface forms mean the same thing here?
-5. Is there a nearby malformed or bad sibling case?
-6. Does this artifact belong in a gate before merge/release/expensive compute?
+3. Could we save it and compare it later?
+4. Could two supported source forms express the same canonical structure?
+5. Is there a nearby malformed sibling?
+6. Does it belong in a gate before merge, release, or expensive compute?
 
-If the answer is “yes” to several of these, the artifact is probably worth testing.
+If several answers are yes, the candidate is probably worth testing.
 
-## Start from the public conformance corpus
+## Start From The Tsubasa Conformance Corpus
 
-You can start from the public Stage 1 conformance corpus:
+Start from the public Tsubasa Conformance Corpus:
 
 - [OrganeticSphere/tsubasa-stage1-conformance](https://github.com/OrganeticSphere/tsubasa-stage1-conformance)
 
-The corpus gives you known-good public `.tsubasa` examples to inspect. You can
-compare your own artifacts against its style, size, and public Stage 1
-boundaries before deciding what belongs in your own case set.
+The repository slug retains legacy spelling for link stability. The corpus gives
+you known public `.tsubasa` source examples, expected results, and explicit
+coverage limitations.
 
 Use the public
 [manifest](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/corpus/manifest.v0.1.json)
 and
 [verification report](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/verification/TOBI_RUNS_v0.1.md)
-as examples of how expected outputs should be recorded.
+as examples of how observed results should be recorded.
 
-Do not copy unverified expectations into your own final manifest. Any final
-canonical output, diagnostic, exit code, or `_h` value must come from a real
-Tobi Validator run.
+Do not copy unverified expectations into a final manifest. Canonical output,
+diagnostics, exit codes, and `_h` values must come from real Tobi Validator
+runs.
 
-Idempotence remains pending in v0.1 and should not be treated as verified.
+Idempotence remains pending in v0.1 and must not be treated as verified.
 
-## The easiest first family to build
+## The Easiest First Family
 
-A good first family has only 3–7 cases.
-
-Recommended shape:
+A good first family has only 3–7 cases:
 
 - 2–4 accepted cases
 - 1–3 reject cases
-- 1 equivalence or convergence case if relevant
+- 1 equivalence or convergence case when relevant
 
 This is enough to learn something real without drowning in noise.
 
-## Two strong beginner patterns
+## Two Strong Beginner Patterns
 
-### Pattern A — boundary family
-Use when the question is:
-- what should pass?
-- what should fail?
+### Pattern A — Boundary Family
 
-Example structure:
-- valid artifact
-- malformed artifact
-- visually confusable or noisy artifact
-
-### Pattern B — convergence family
-Use when the question is:
-- do these different surface forms really mean the same thing?
+Use when the question is what should pass and what should reject.
 
 Example structure:
+
+- valid authored source
+- malformed source
+- visually confusable or noisy source
+
+### Pattern B — Convergence Family
+
+Use when the question is whether different supported surface forms converge to
+one canonical representation.
+
+Example structure:
+
 - simple accepted form
-- accepted variant spelling
-- stress spelling with extra normalization pressure
+- accepted variant
+- stress form with additional normalization pressure
 - malformed nearby sibling
 
-## How to know when you found something real
+## How To Know When You Found Something Real
 
-You found a real reasoning artifact when all of this is true:
+You found a useful reasoning-artifact candidate when:
 
-- the artifact can be written down explicitly
-- a reviewer can disagree with it in a concrete way
-- a validator or gate could meaningfully check it
-- the outcome affects what enters the repository or workflow
-- it is smaller than a whole session, but bigger than a random token
+- it can be written down explicitly
+- a reviewer can disagree with it concretely
+- Tobi can meaningfully accept or reject it
+- the result affects what enters a repository or workflow
+- it is smaller than a whole session but larger than a random token
 
-## What to do after you find one
+## What To Do Next
 
-Once you have one good candidate:
-
-1. write the accepted and rejected forms explicitly
+1. write accepted and rejected source forms explicitly
 2. remove vague or imagined behavior
-3. narrow it to what your current validator can actually check
+3. narrow the case to what Tobi can currently check
 4. keep it small
 5. save it as a reusable case set
-6. run it through your validation path
+6. run it through the validation path
+7. record only observed canonical output or diagnostics
 
-## Why this matters
+## Why This Matters
 
-The goal is not just to reject bad input.
-
-The deeper value is to move reasoning from:
+The goal is not only to reject malformed source. It is to move an important
+handoff from:
 
 - trace-like
 - informal
 - hard to compare
 - easy to drift
 
-toward something more:
+toward an artifact that is:
 
-- canonical
+- canonical after acceptance
 - reproducible
 - validator-checkable
+- suitable for a workflow boundary
 
-That is the operational meaning of a reasoning artifact.
+## Minimal Starter Checklist
 
-## Minimal starter checklist
+Before your first pilot, have:
 
-Before your first pilot, make sure you have:
-
-- one artifact that should pass
-- one artifact that should fail
+- one source artifact expected to pass
+- one source artifact expected to reject
 - one reason why the difference matters
 - one place in your workflow where a gate is useful
 
 That is enough to begin.
 
-## Bottom line
+## Boundaries
 
-You do not need a huge corpus to start.
+`_h` is compatibility identity only. Canonical equality does not establish
+factual truth. Validator acceptance is not universal correctness.
 
-You need one narrow, explicit, consequential artifact family.
+## Bottom Line
 
-Start there.
+You do not need a huge corpus to start. You need one narrow, explicit,
+consequential artifact family.
