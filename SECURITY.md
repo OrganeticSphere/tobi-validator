@@ -2,9 +2,9 @@
 
 ## Security reporting
 
-If you believe you have found a security-sensitive issue related to the released
-Stage 1 product line of **AI Verification Engine / Tobi Validator**, do not open
-a public issue for details that would create unnecessary risk.
+If you believe you have found a security-sensitive issue related to Tobi
+Validator, do not open a public issue when disclosure would create unnecessary
+risk.
 
 Instead, report it privately through the project contact path.
 
@@ -22,7 +22,7 @@ Please include:
 - exact input or fixture involved
 - exact observed behavior
 - whether the issue affects:
-  - binary distribution
+  - controlled binary delivery
   - validator execution
   - workflow usage
   - diagnostics/reporting
@@ -30,21 +30,23 @@ Please include:
 
 ## Scope note
 
-This repository is the public GitHub distribution surface for the released
-Stage 1 line.
+This repository is the public GitHub documentation, Action-wrapper, and adoption
+surface for Tobi Validator.
 
-Security reports should stay narrowly grounded in the currently released surface:
+Security reports should stay narrowly grounded in the released surface:
 
 - installable `tobi` CLI
+- authored Tsubasa source validation
 - canonical ASCII output
 - current `_h` compatibility identity
 - deterministic diagnostics
 - `golden` conformance execution
-- thin packaging and install / usage framing
+- thin packaging and workflow usage
 
 This repository should not be read as a claim of:
 
 - runtime/backend product surface
-- verification API surface
+- public verification API surface
 - platform SDK surface
 - broader Organetic platform release surface
+- unrestricted public access to the production validator implementation
