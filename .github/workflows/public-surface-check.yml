@@ -114,12 +114,13 @@ jobs:
               errors.append("interim/future Tsubasa reference boundary is missing")
 
           action = texts.get(Path("action.yml"), "")
+          expression_open = "$" + "{{"
           required_action_fragments = [
               'name: "Tobi Validator GitHub Action"',
               "eval_token:",
               'default: "stage1-tobi-validator-v0.7.0"',
-              'if: ${{ inputs.mode == \'canon\' }}',
-              'if: ${{ inputs.mode == \'golden\' }}',
+              f"if: {expression_open} inputs.mode == 'canon' }}}}",
+              f"if: {expression_open} inputs.mode == 'golden' }}}}",
               'if ($mode -ne "canon" -and $mode -ne "golden")',
           ]
           for fragment in required_action_fragments:
