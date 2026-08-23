@@ -77,7 +77,7 @@ For the shortest public path:
 - [Tobi Validator Quickstart](./docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md)
 - [Finding Your First Reasoning Artifacts](./docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md)
 - [Agent workflow governance vs reasoning verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
-- [Tsubasa Language Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
+- [Tsubasa Public Syntax and Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
 - [Tsubasa Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md)
 - [Tobi Validator Install And Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
 - [Tobi Validator Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
@@ -136,9 +136,9 @@ See the first public flagship validator-first demo repository:
 This repository shows:
 
 - a valid `.tsubasa` artifact
-- a drift-equivalent convergent variant
+- a surface-different accepted variant with the same recorded canonical result
 - a malformed reject sibling
-- a GitHub pull-request gate around Tobi Validator
+- a GitHub workflow that uses Tobi Validator results as a pull-request check
 
 ## Tobi Validator GitHub Action
 
@@ -153,6 +153,9 @@ That means:
 - private distribution credentials are internal to Organetic and are not required in customer repositories
 - controlled distribution is handled internally by Organetic's evaluation broker
 - the Action infers the release archive from runner OS and architecture when no explicit archive override is provided
+
+The Action exposes validator success or failure to GitHub. The consuming
+workflow owns any merge, release, allow, block, or escalation policy.
 
 Supported runner families for the controlled binary line:
 
