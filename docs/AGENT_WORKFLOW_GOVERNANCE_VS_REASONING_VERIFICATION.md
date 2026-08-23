@@ -88,8 +88,11 @@ validation step whose result is consumed by a separate policy layer:
 
 ```text
 agent authors Tsubasa source
-→ Tobi validates and canonicalizes it
-→ canonical ASCII / _h / diagnostics emitted
+→ Tobi validates the source and canonicalizes accepted input
+→ accepted:
+    canonical ASCII + _h compatibility identity
+  OR rejected:
+    deterministic diagnostics
 → governance system records the validator result
 → governance policy decides whether the workflow continues, blocks, or escalates
 ```

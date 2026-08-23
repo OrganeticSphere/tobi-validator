@@ -17,7 +17,9 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Validate public surface
         shell: bash
@@ -78,6 +80,7 @@ jobs:
               "Tobi compares": "Tobi does not expose a general artifact-comparison command",
               "Tobi Validator compares": "Tobi does not expose a general artifact-comparison command",
               "Tobi gates": "Tobi does not own downstream action policy",
+              "canonical ASCII / _h / diagnostics": "accepted and rejected outputs must remain explicitly branched",
               "current public-safe current": "duplicated editorial wording",
               "current accepted current": "duplicated editorial wording",
           }
@@ -118,6 +121,21 @@ jobs:
               )
           if "does not replace the future complete Tsubasa Language Reference book" not in reference_text:
               errors.append("interim/future Tsubasa reference boundary is missing")
+
+          governance_path = Path(
+              "docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md"
+          )
+          governance_text = texts.get(governance_path, "")
+          governance_outcome_pattern = re.compile(
+              r"→ accepted:\n"
+              r"\s+canonical ASCII \+ _h compatibility identity\n"
+              r"\s+OR rejected:\n"
+              r"\s+deterministic diagnostics"
+          )
+          if not governance_outcome_pattern.search(governance_text):
+              errors.append(
+                  "governance flow must explicitly branch accepted and rejected validator outputs"
+              )
 
           action = texts.get(Path("action.yml"), "")
           expression_open = "$" + "{{"
