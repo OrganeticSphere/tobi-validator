@@ -1,5 +1,5 @@
 name: "Tobi Validator GitHub Action"
-description: "Deterministic validation for Tsubasa reasoning artifacts in GitHub workflows through controlled evaluation access"
+description: "Run Tobi Validator canon or golden checks for Tsubasa artifacts through controlled evaluation access"
 
 branding:
   icon: "shield"
