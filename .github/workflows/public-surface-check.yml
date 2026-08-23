@@ -29,6 +29,7 @@ jobs:
 
           import json
           import re
+          import subprocess
           import sys
           from pathlib import Path
 
@@ -48,6 +49,8 @@ jobs:
               Path("docs/STAGE1_INSTALL_AND_USAGE.md"),
               Path("docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md"),
               Path("docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md"),
+              Path("docs/TOBI_ACTION_V2_MIGRATION.md"),
+              Path("docs/TOBI_ACTION_VERSION_POLICY.md"),
               Path("docs/TSUBASA_FOR_AGENTS_STAGE1.md"),
               Path("docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md"),
               Path("examples/github-actions/stage1_tobi_validator_example.yml"),
@@ -152,6 +155,128 @@ jobs:
                   errors.append(f"action.yml missing required fragment: {fragment}")
           if re.search(r"mode\s*[:=]\s*['\"]?validate\b", action, re.IGNORECASE):
               errors.append("unsupported validate mode appears in action.yml")
+
+          eval_token_block = re.search(
+              r"(?m)^  eval_token:\r?\n((?:    [^\r\n]*(?:\r?\n|$))*)",
+              action,
+          )
+          if not eval_token_block or not re.search(
+              r"(?m)^    required:\s*true\s*$", eval_token_block.group(1)
+          ):
+              errors.append("action.yml eval_token input must remain required")
+
+          live_integration_paths = [
+              Path("README.md"),
+              Path("docs/STAGE1_GITHUB_ACTION_STARTER.md"),
+              Path("examples/github-actions/stage1_tobi_validator_example.yml"),
+          ]
+          version_policy_path = Path("docs/TOBI_ACTION_VERSION_POLICY.md")
+          migration_path = Path("docs/TOBI_ACTION_V2_MIGRATION.md")
+          legacy_reference_allowlist = {version_policy_path, migration_path}
+          v1_reference = "OrganeticSphere/tobi-validator@v" + "1"
+          v2_reference = "OrganeticSphere/tobi-validator@v2"
+          historical_token = "dist" + "_token"
+
+          for path in live_integration_paths:
+              text = texts.get(path, "")
+              if v2_reference not in text:
+                  errors.append(f"current integration file missing {v2_reference}: {path}")
+              if v1_reference in text:
+                  errors.append(f"legacy v1 reference remains in current integration file: {path}")
+              if historical_token in text:
+                  errors.append(f"historical distribution input remains in current integration file: {path}")
+              if "eval_token" not in text or "TOBI_EVAL_TOKEN" not in text:
+                  errors.append(f"current token convention is incomplete in integration file: {path}")
+
+          tracked_text_paths = []
+          tracked_output = subprocess.run(
+              ["git", "ls-files"],
+              check=True,
+              capture_output=True,
+              text=True,
+              encoding="utf-8",
+          ).stdout
+          for tracked_name in tracked_output.splitlines():
+              tracked_path = Path(tracked_name)
+              if tracked_path.suffix.lower() in {".md", ".txt", ".yml", ".yaml"}:
+                  tracked_text_paths.append(tracked_path)
+
+          for path in tracked_text_paths:
+              text = path.read_text(encoding="utf-8")
+              historical_report = path.parts[:2] == ("docs", "reports")
+              if (
+                  v1_reference in text
+                  and path not in legacy_reference_allowlist
+                  and not historical_report
+              ):
+                  errors.append(f"v1 integration reference outside explicit allowlist: {path}")
+              if (
+                  historical_token in text
+                  and path != migration_path
+                  and not historical_report
+              ):
+                  errors.append(f"historical distribution input outside migration history: {path}")
+
+          policy_text = texts.get(version_policy_path, "")
+          required_policy_fragments = [
+              "Current supported Action major:",
+              "Current integration reference:",
+              v2_reference,
+              "First v2 release:",
+              "`v2.0.0`",
+              "`v1.0.0` is the legacy exact Marketplace release",
+              "frozen transitional line",
+              "Movement or deletion of `v1` is not planned",
+              "public Action contract and security boundary changed",
+              "does not change Tsubasa semantics",
+              "does not change Tobi canonicalization",
+              "`_h` remains compatibility identity only",
+              "`stage1-tobi-validator-v0.7.0`",
+              "does not add a\n  `validate` mode",
+              "does not create a public verification API",
+              "does not expose the production validator implementation",
+          ]
+          for fragment in required_policy_fragments:
+              if fragment not in policy_text:
+                  errors.append(f"Action version policy missing required boundary: {fragment}")
+
+          migration_text = texts.get(migration_path, "")
+          required_migration_fragments = [
+              v1_reference,
+              v2_reference,
+              historical_token,
+              "TOBI_EVAL_TOKEN",
+              "eval_token",
+              "canon_input: path/to/artifact.tsubasa",
+              "golden_fixtures: path/to/fixtures.json",
+              "`_h` is compatibility identity only",
+              "Canonical equality does not establish factual truth",
+              "Validator acceptance is not universal correctness",
+              "The consuming workflow owns merge, release, allow, block, and escalation",
+          ]
+          for fragment in required_migration_fragments:
+              if fragment not in migration_text:
+                  errors.append(f"v2 migration guide missing required boundary: {fragment}")
+          if ".tbs" in migration_text:
+              errors.append("v2 migration guide must use .tsubasa examples, not .tbs")
+
+          current_copy = "\n".join(texts.values())
+          maintained_v1_claims = [
+              "current supported action major:\n\n`v1`",
+              "`v1` is the maintained major",
+              "`v1` is the maintained line",
+              "v1 is the maintained major",
+              "v1 is the maintained line",
+          ]
+          for claim in maintained_v1_claims:
+              if claim in current_copy.lower():
+                  errors.append(f"current copy incorrectly maintains v1: {claim}")
+          if re.search(
+              r"\bv2\s+(?:changes|modifies|alters)\s+(?:Tobi|Tsubasa|validator)",
+              current_copy,
+              re.IGNORECASE,
+          ):
+              errors.append("current copy claims that v2 changes validator semantics")
 
           for fixture in [Path("examples/golden/fixtures.json")]:
               try:
