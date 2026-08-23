@@ -34,7 +34,7 @@ The source-to-result model is:
 ```text
 authored Tsubasa source
 → validation and canonicalization through Tobi
-→ canonical ASCII + _h
+→ canonical ASCII + _h compatibility identity
 ```
 
 or:
@@ -115,13 +115,13 @@ For the current shipped fixture corpus, a representative success reading is:
 ### Canonical ASCII
 
 Canonical ASCII is the stable representation produced through Tsubasa
-canonicalization in Tobi for accepted source. Different accepted surface forms
-that express the same supported structure should converge here.
+canonicalization in Tobi for accepted source. Supported surface variants may
+converge to the same recorded canonical output.
 
-### HASH
+### `HASH:` Label And `_h`
 
-`HASH` is the current `_h` compatibility identity for the accepted canonical
-artifact.
+`HASH:` is the CLI label under which Tobi prints the current `_h` compatibility
+identity for the accepted canonical artifact.
 
 `_h` is compatibility identity only. It is not proof, certification, signature,
 or consensus.
