@@ -56,7 +56,7 @@ block, merge, release, and escalation policy.
 
 ## Scope Note
 
-This repository is the public documentation, Action-wrapper, and adoption
+This repository is the public documentation, Action wrapper, and adoption
 surface for Tobi Validator.
 
 It is not a claim of:
