@@ -29,6 +29,11 @@ Start with:
 - `docs/STAGE1_GITHUB_ACTION_STARTER.md`
 - `docs/STAGE1_DIAGNOSTICS_REFERENCE.md`
 - `docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md`
+- `docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md`
+
+The final file above is the interim **Tsubasa Public Syntax and Authoring
+Reference** for the current released validator corridor. It does not replace the
+forthcoming complete **Tsubasa Language Reference** book.
 
 The physical filenames retain legacy `STAGE1` spelling for link stability.
 Their visible titles and current product language use Tobi Validator.
@@ -43,7 +48,11 @@ Please keep questions concrete where possible:
 - what workflow you are trying to support
 - what command or step you ran
 - what failed or was unclear
+- what policy will consume the validator result
 - whether the issue concerns docs, diagnostics, workflow fit, or product scope
+
+Tobi supplies validator results. The consuming workflow owns downstream allow,
+block, merge, release, and escalation policy.
 
 ## Scope note
 
