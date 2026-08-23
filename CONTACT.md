@@ -1,4 +1,4 @@
-# CONTACT
+# Contact
 
 ## Organetic
 
@@ -13,11 +13,11 @@ Public product and documentation surface for:
 
 - https://organetic.ai
 
-## Product contact
+## Product Contact
 
 - support@organetic.ai
 
-## Current public path
+## Current Public Path
 
 The current public adoption path is GitHub-first.
 
@@ -38,7 +38,7 @@ forthcoming complete **Tsubasa Language Reference** book.
 The physical filenames retain legacy `STAGE1` spelling for link stability.
 Their visible titles and current product language use Tobi Validator.
 
-## Workflow-fit discussions
+## Workflow-Fit Discussions
 
 For GitHub workflow-fit questions, start from the documentation and examples in
 this repository.
@@ -54,7 +54,7 @@ Please keep questions concrete where possible:
 Tobi supplies validator results. The consuming workflow owns downstream allow,
 block, merge, release, and escalation policy.
 
-## Scope note
+## Scope Note
 
 This repository is the public documentation, Action-wrapper, and adoption
 surface for Tobi Validator.
