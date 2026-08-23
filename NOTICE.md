@@ -1,4 +1,4 @@
-# NOTICE
+# Notice
 
 This repository is the public GitHub entry and adoption surface for:
 
