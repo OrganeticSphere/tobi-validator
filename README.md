@@ -320,3 +320,4 @@ In short:
 - controlled validator delivery: **separate from unrestricted public repository access**
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Join_Organetic-blue?logo=telegram&logoColor=white)](https://t.me/+wKVUzIlax44yYjhi)
+[![X Profile](https://img.shields.io/badge/X-Follow_Organetic-black?logo=x&logoColor=white)](https://x.com/OrganeticSphere)
