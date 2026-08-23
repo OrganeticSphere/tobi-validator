@@ -1,6 +1,6 @@
-# SECURITY
+# Security
 
-## Security reporting
+## Security Reporting
 
 If you believe you have found a security-sensitive issue related to Tobi
 Validator, do not open a public issue when disclosure would create unnecessary
@@ -12,7 +12,7 @@ Current private reporting path:
 
 - security / product contact: support@organetic.ai
 
-## What to include
+## What To Include
 
 Please include:
 
@@ -28,7 +28,7 @@ Please include:
   - diagnostics/reporting
 - steps to reproduce if available
 
-## Scope note
+## Scope Note
 
 This repository is the public GitHub documentation, Action-wrapper, and adoption
 surface for Tobi Validator.
