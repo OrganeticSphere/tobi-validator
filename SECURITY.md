@@ -19,7 +19,7 @@ Please include:
 - exact product version or release tag
 - operating system / environment
 - exact command run
-- exact input or fixture involved
+- exact source or fixture involved
 - exact observed behavior
 - whether the issue affects:
   - controlled binary delivery
@@ -42,6 +42,9 @@ Security reports should stay narrowly grounded in the released surface:
 - deterministic diagnostics
 - `golden` conformance execution
 - thin packaging and workflow usage
+
+Tobi supplies validator success or failure. A consuming workflow owns any allow,
+block, merge, release, or escalation policy around that result.
 
 This repository should not be read as a claim of:
 
