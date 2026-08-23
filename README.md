@@ -76,12 +76,12 @@ For the shortest public path:
 
 - [Tobi Validator Quickstart](./docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md)
 - [Finding Your First Reasoning Artifacts](./docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md)
-- [Agent workflow governance vs reasoning verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
+- [Agent Workflow Governance vs Reasoning Verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
 - [Tsubasa Public Syntax and Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
 - [Tsubasa Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md)
-- [Tobi Validator Install And Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
+- [Tobi Validator Install and Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
 - [Tobi Validator Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
-- [Tobi Validator Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
+- [Tobi Validator Support and Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
 - [Tobi Validator GitHub Action Starter](./docs/STAGE1_GITHUB_ACTION_STARTER.md)
 
 The public syntax-and-authoring document above is an interim reference for the
@@ -131,7 +131,7 @@ read as free, unrestricted validator execution.
 
 ---
 
-### Validator-backed example repository
+### Validator-Backed Example Repository
 
 See the first public flagship validator-first demo repository:
 
@@ -175,7 +175,7 @@ Current Action modes:
 
 No `validate` mode is shipped.
 
-### Required secret
+### Required Secret
 
 For evaluation access, create this repository secret in the consuming GitHub
 repository:
@@ -186,7 +186,7 @@ The secret should contain the 7-day evaluation token issued through:
 
 https://organetic.ai/eval-access
 
-### Minimal Linux `canon` example
+### Minimal Linux `canon` Example
 
 ```yaml
 name: Tobi Canon
@@ -209,7 +209,7 @@ jobs:
           canon_input: examples/sample.tsubasa
 ```
 
-### Minimal Windows `golden` example
+### Minimal Windows `golden` Example
 
 ```yaml
 name: Tobi Golden
@@ -232,7 +232,7 @@ jobs:
           golden_fixtures: examples/golden/fixtures.json
 ```
 
-### Current `v1` reading
+### Current `v1` Reading
 
 Action `v1` is intentionally narrow:
 
@@ -267,7 +267,7 @@ This repository does **not** contain:
 
 ---
 
-## GitHub-first public path
+## GitHub-First Public Path
 
 The current public adoption path is GitHub-first:
 
@@ -288,7 +288,7 @@ usage is available through direct public binary download.
 For failure interpretation and issue reporting, start with:
 
 - [Tobi Validator Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
-- [Tobi Validator Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
+- [Tobi Validator Support and Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
 
 Please keep reports exact and reproducible.
 
@@ -301,7 +301,7 @@ Please keep reports exact and reproducible.
 
 ---
 
-## Current bottom line
+## Current Bottom Line
 
 This repository is the public GitHub entry surface for Tobi Validator.
 
