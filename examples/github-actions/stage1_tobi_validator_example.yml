@@ -5,6 +5,9 @@ on:
   pull_request:
   push:
 
+# Tobi supplies validator success or failure. Repository branch protection and
+# workflow policy determine whether that result blocks merge or release.
+
 jobs:
   canon-linux:
     runs-on: ubuntu-latest
