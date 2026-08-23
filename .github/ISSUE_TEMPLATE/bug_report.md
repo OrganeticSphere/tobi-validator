@@ -26,6 +26,9 @@ The released surface is intentionally narrow:
 - `golden` conformance execution
 - thin packaging and workflow usage
 
+Tobi supplies validator success or failure. A consuming workflow owns any allow,
+block, merge, release, or escalation policy around that result.
+
 Do not use this template for requests about:
 
 - runtime/backend features
@@ -45,7 +48,7 @@ paste command here
 
 ## 3. Exact Source / Fixture Used
 
-State the exact file or fixture used.
+State the exact source file or fixture used.
 
 Examples:
 
