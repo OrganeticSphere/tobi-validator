@@ -55,6 +55,6 @@ If you are looking for the public product entry, start with:
 The legacy `STAGE1` spelling in those physical filenames is retained for link
 stability. Their visible titles and current product language use Tobi Validator.
 
-In short, this repository is the public documentation, Action-wrapper, and
+In short, this repository is the public documentation, Action wrapper, and
 adoption surface for Tobi Validator. Controlled validator delivery remains
 separate from unrestricted public repository access.
