@@ -15,7 +15,7 @@ This document is a GitHub-first adoption path for Tobi Validator.
 It is intentionally narrow. It provides:
 
 - a starter for understanding how the released validator CLI fits inside GitHub workflows
-- a support-layer example for validator-backed repository gates
+- a support-layer example for workflows that use validator results as repository checks
 - a practical path for Tsubasa reasoning-artifact discipline
 
 The authoring and validation model is:
@@ -82,6 +82,9 @@ usage is available through the repository by default.
 The Action wrapper is public. Validator delivery is controlled and separate
 through Organetic's evaluation broker.
 
+Tobi exposes validator success or failure. The consuming workflow owns any
+merge, release, allow, block, or escalation policy.
+
 ## What A GitHub Workflow Should Do
 
 A narrow Tobi Validator workflow should:
@@ -133,15 +136,17 @@ jobs:
           canon_input: examples/sample.tsubasa
 ```
 
-## Language Reference
+## Current Public Tsubasa Reference
 
 For the most complete current public-safe authoring guide for repository-owned
 artifacts, read:
 
 - `docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md`
 
-The physical filename retains legacy spelling for link stability; the visible
-public title is **Tsubasa Language Reference**.
+The physical filename retains legacy spelling for link stability. Its visible
+public title is **Tsubasa Public Syntax and Authoring Reference**. It is an
+interim reference for the current released validator corridor, not the
+forthcoming complete Tsubasa Language Reference book.
 
 ## What It Does Not Imply
 
