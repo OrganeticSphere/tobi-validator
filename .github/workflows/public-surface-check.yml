@@ -73,7 +73,13 @@ jobs:
               "drift-equivalent": "unsupported drift-equivalence wording",
               "canonical truth": "canonical representation must not be called truth",
               "canonical meaning": "canonical output must not be called semantic meaning",
-              "Tobi gates artifact trust": "Tobi does not own downstream action policy",
+              "same-meaning": "unsupported semantic-equivalence shorthand",
+              "same meaning": "unsupported semantic-equivalence shorthand",
+              "Tobi compares": "Tobi does not expose a general artifact-comparison command",
+              "Tobi Validator compares": "Tobi does not expose a general artifact-comparison command",
+              "Tobi gates": "Tobi does not own downstream action policy",
+              "current public-safe current": "duplicated editorial wording",
+              "current accepted current": "duplicated editorial wording",
           }
 
           for path, text in texts.items():
