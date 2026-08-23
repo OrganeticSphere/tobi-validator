@@ -1,9 +1,9 @@
-# Tsubasa Language Reference
+# Tsubasa Public Syntax and Authoring Reference
 
-**Status:** Public-safe language reference for the released Tobi Validator contract
+**Status:** Interim public-safe reference for the released Tobi Validator contract
 **Scope:** Current public Tsubasa authoring corridor for external teams, third-party AI agents, evaluators, and GitHub/CI users
 **Product:** Tobi Validator — Reasoning Artifact Validator
-**Boundary note:** This document is the most complete public-safe syntax-and-authoring reference currently available for the released Tobi Validator contract. It does **not** claim full long-term language completeness. The Tsubasa language contract owns semantics; Tobi implements and operationally enforces that contract. The released product remains validator-first and intentionally narrow.
+**Boundary note:** This is the interim public syntax-and-authoring reference for the current released Tobi Validator contract. It does **not** claim full long-term language completeness and does not replace the future complete Tsubasa Language Reference book. The Tsubasa language contract owns semantics and canonical rules; Tobi implements and operationally enforces that contract. The released product remains validator-first and intentionally narrow.
 
 ---
 
@@ -54,7 +54,7 @@ In the current released validator corridor, Tsubasa should **not** be read as:
 The current public-safe mental model is narrower and more operational:
 
 > Tsubasa is the semantic layer for canonical reasoning artifacts.
-> Tobi is the reference validator that accepts, rejects, canonicalizes, and compares those artifacts.
+> Tobi is the reference validator that accepts or rejects authored source and produces canonical output, `_h` compatibility identity, or deterministic diagnostics.
 
 That means good current Tsubasa authoring is:
 - small,
@@ -70,7 +70,7 @@ A practical loop is:
 author Tsubasa source
 → validate and canonicalize through Tobi
 → inspect canonical output or deterministic diagnostics
-→ compare
+→ record and compare observed results when needed
 → refine
 ```
 
@@ -78,7 +78,7 @@ Authored Tsubasa source is not assumed to be canonical. Accepted surface forms p
 
 The core discipline is simple:
 
-> use Tobi results rather than prose intuition, and compare accepted artifacts through canonical output rather than raw surface appearance.
+> use observed Tobi results rather than prose intuition. When comparing accepted cases, compare recorded canonical output rather than raw surface spelling. Tobi does not expose a general artifact-comparison command.
 
 ---
 
@@ -135,7 +135,7 @@ The released product is:
 Its released contour is intentionally narrow. Public-safe current capability includes:
 - installable validator CLI,
 - canonical ASCII output,
-- `_h` hash output,
+- `_h` compatibility identity, displayed under the CLI `HASH:` label,
 - deterministic diagnostics,
 - conformance / golden execution,
 - thin packaging,
@@ -351,7 +351,7 @@ DEC(1)
 **Caution:**
 - this is convergence, not semantic widening,
 - malformed numeric forms may reject,
-- do not assume every plausible numeric formatting style is part of the currently accepted syntax.
+- do not assume every plausible numeric formatting style is part of current truth.
 
 ### 6.4 Atomic block
 
@@ -476,13 +476,13 @@ The point of Tsubasa canonicalization through Tobi is reproducibility, not mysti
 It means:
 - stylistic source differences should not be mistaken for semantic differences,
 - Tobi exposes the accepted canonical representation under the Tsubasa language contract,
-- compare by canonical result, not by raw source appearance.
+- when comparing runs or supported surface variants, compare recorded canonical results rather than raw source appearance.
 
 ### 7.5 Authored source vs canonical representation
 
 This is a central Tobi Validator discipline rule:
 
-> authored Tsubasa source is what you submit; canonical output is the stable representation produced through Tsubasa canonicalization through Tobi.
+> authored Tsubasa source is what you submit; canonical output is the stable representation produced by Tobi’s implementation of the Tsubasa canonicalization contract.
 
 That distinction is essential for human users and AI agents alike.
 
@@ -542,7 +542,7 @@ Author with accepted skins if needed, but compare and reason through `seq([...])
 
 ### 9.1 Decimal convergence
 
-Current public-safe current Tobi behavior supports decimal convergence across equivalent surface forms.
+Current public-safe Tobi behavior supports decimal convergence across supported surface forms.
 
 Observed family:
 
@@ -590,7 +590,7 @@ The current public-safe numeric reading is conservative:
 
 ## 10. What Accepted Authoring Should Look Like
 
-Current accepted current Tsubasa authoring should look:
+Current accepted Tsubasa authoring should look:
 - small,
 - explicit,
 - narrow,
@@ -610,7 +610,7 @@ Good current Tsubasa authoring typically has:
 
 A useful rule is:
 
-> if the artifact cannot be easily reviewed, canonicalized, and compared, it is probably too broad for the current released validator corridor.
+> if the authored source cannot be reviewed and its observed validator result cannot be recorded for later comparison, the case is probably too broad for the current released validator corridor.
 
 ---
 
@@ -634,7 +634,7 @@ External AI agents and external teams must **not** invent:
 - unsupported package systems,
 - unsupported macro systems.
 
-They must also not assume that internal trunk/compiler depth defines public authoring scope.
+They must also not assume that internal trunk/compiler depth equals public authoring truth.
 
 ### Liu-specific caution
 
@@ -701,7 +701,7 @@ let x = 01.000 in x
 ```
 
 Current public-safe interpretation:
-- same-meaning convergence family,
+- surface-variant canonical-convergence family,
 - useful for canonical comparison,
 - useful for CI regression.
 
@@ -714,10 +714,10 @@ atomic{ let x = 1 in x ▷ let y = 2 in y }
 
 Current public-safe interpretation:
 - same sequencing family,
-- same canonical sequencing form,
+- same observed canonical sequencing form,
 - good for skin-versus-canonical training.
 
-### 12.3 Same-meaning / same-canonical-form families
+### 12.3 Canonical-convergence families
 
 These are some of the best families for external AI agents to learn from.
 
@@ -725,7 +725,7 @@ Preferred pattern:
 - surface differs,
 - canonical result converges,
 - `_h` is expected to converge,
-- validator demonstrates sameness better than prose.
+- observed canonical output provides stronger evidence than prose expectation.
 
 ### 12.4 Rejected malformed siblings
 
@@ -793,16 +793,18 @@ Typical shape:
 ### 13.2 Convergence family
 
 Purpose:
-- prove that stylistic variants converge to one canonical result.
+- test whether supported surface variants converge to one recorded canonical result.
 
 Typical use:
-- same-meaning decimal variants,
+- supported decimal surface variants with the same observed canonical result,
 - sequencing skins converging to `seq([...])`.
 
 ### 13.3 Minimal CI gate family
 
 Purpose:
 - small artifacts suitable for pass/fail checks in CI.
+
+The consuming CI workflow owns the gate policy; Tobi supplies the validator result.
 
 Traits:
 - deterministic,
@@ -847,7 +849,7 @@ External teams should read validator output functionally.
 In the current released validator corridor, canonical ASCII is the most important inspectable canonical surface.
 
 Use it to answer:
-- what meaning the validator accepted,
+- what canonical structure Tobi produced for accepted source,
 - whether surface variants converged,
 - whether your expectation matched the actual accepted structure.
 
@@ -856,8 +858,8 @@ Use it to answer:
 `_h` is the compatibility identity produced through the locked canonical doctrine.
 
 Practical current public reading:
-- if canonical meaning converges, compatibility identity should converge,
-- compare through canonical result, not raw source text alone.
+- byte-identical canonical ASCII under the same validator contract should produce the same `_h`,
+- compare recorded canonical output rather than raw source text alone.
 
 ### 14.3 What `reject` means
 
@@ -914,7 +916,7 @@ The best current learning loop is:
 Instead of inventing new syntax families, create small test families:
 - valid baseline,
 - accepted variant,
-- same-meaning convergence sibling,
+- canonical-convergence sibling,
 - malformed reject sibling.
 
 This is far safer than free-form expansion.
@@ -956,7 +958,7 @@ It must not be used to imply:
 ## 17. Glossary
 
 **artifact**
-Authored Tsubasa source submitted for validation and canonicalization. Accepted source yields a canonical artifact; rejected source yields deterministic diagnostics.
+Authored Tsubasa source submitted for validation. Accepted source yields canonical output and `_h` compatibility identity; rejected source yields deterministic diagnostics.
 
 **canonical ASCII**
 The canonical text output produced by the validator after canonicalization. In the current released validator corridor, this is the primary inspectable canonical surface.
@@ -977,7 +979,7 @@ A nearby example that looks plausibly similar to a valid case but is expected to
 A surface authoring form that is allowed for input but is not canonical representation.
 
 **canonical representation**
-What the validator preserves after normalization, alias mapping, desugar, and canonicalization.
+The stable representation produced after normalization, alias mapping, desugar, and canonicalization under the Tsubasa language contract.
 
 **golden**
 A stable example or fixture family used for conformance and regression checking.
@@ -1009,8 +1011,8 @@ An external team can safely do the following today:
 - use small sequencing examples,
 - use decimal convergence examples,
 - validate through Tobi,
-- compare through canonical ASCII and `_h`,
-- build CI gates around current narrow accepted behavior.
+- record canonical ASCII and `_h` for external comparison under the same validator contract,
+- provide validator results that a consuming CI workflow may use as checks under its own policy.
 
 An external team must **not** assume:
 - full runtime language breadth,
