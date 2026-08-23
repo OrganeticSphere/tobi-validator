@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Tobi canon
-        uses: OrganeticSphere/tobi-validator@v1
+        uses: OrganeticSphere/tobi-validator@v2
         with:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Tobi golden
-        uses: OrganeticSphere/tobi-validator@v1
+        uses: OrganeticSphere/tobi-validator@v2
         with:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden

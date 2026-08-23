@@ -202,11 +202,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: OrganeticSphere/tobi-validator@v1
+      - uses: OrganeticSphere/tobi-validator@v2
         with:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
-          canon_input: examples/sample.tsubasa
+          canon_input: path/to/artifact.tsubasa
 ```
 
 ### Minimal Windows `golden` Example
@@ -225,16 +225,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: OrganeticSphere/tobi-validator@v1
+      - uses: OrganeticSphere/tobi-validator@v2
         with:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
-          golden_fixtures: examples/golden/fixtures.json
+          golden_fixtures: path/to/fixtures.json
 ```
 
-### Current `v1` Reading
+### Current `v2` Reading
 
-Action `v1` is intentionally narrow:
+Action `v2` is intentionally narrow:
 
 - `canon` mode
 - `golden` mode
@@ -243,6 +243,10 @@ Action `v1` is intentionally narrow:
 - checksum verification before extraction
 - OS-aware archive selection for Windows, Linux, and macOS
 - no runtime, backend, public API, or platform claims
+
+See the [Action version policy](./docs/TOBI_ACTION_VERSION_POLICY.md) and
+[v2 migration guide](./docs/TOBI_ACTION_V2_MIGRATION.md) for the supported line
+and legacy migration boundaries.
 
 ---
 

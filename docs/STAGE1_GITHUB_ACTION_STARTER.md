@@ -111,7 +111,7 @@ A narrow Tobi Validator workflow should:
 
 - request a 7-day evaluation token from Organetic
 - store it as `TOBI_EVAL_TOKEN`
-- use `OrganeticSphere/tobi-validator@v1`
+- use `OrganeticSphere/tobi-validator@v2`
 - pass `eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}`
 - run `canon` and/or `golden`
 
@@ -129,12 +129,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: OrganeticSphere/tobi-validator@v1
+      - uses: OrganeticSphere/tobi-validator@v2
         with:
           eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
-          canon_input: examples/sample.tsubasa
+          canon_input: path/to/artifact.tsubasa
 ```
+
+For the maintained major and legacy boundaries, see the
+[Action version policy](./TOBI_ACTION_VERSION_POLICY.md) and
+[v2 migration guide](./TOBI_ACTION_V2_MIGRATION.md).
 
 ## Current Public Tsubasa Reference
 
