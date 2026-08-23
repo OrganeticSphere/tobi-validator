@@ -38,7 +38,10 @@ remain:
 Those identifiers are retained for release compatibility and do not represent
 the current public product name.
 
-The help banner should identify the product as Tobi Validator.
+The current `stage1-tobi-validator-v0.7.0` binary help banner retains the
+historical lockup `AI Verification Engine / Tobi Validator`. This documentation
+migration does not modify the released binary. The active public name for new
+product copy is **Tobi Validator**.
 
 ## Canon Usage
 
@@ -55,13 +58,13 @@ The processing model is:
 ```text
 authored Tsubasa source
 → validation and Tsubasa canonicalization through Tobi
-→ CANON + HASH
+→ canonical ASCII + _h compatibility identity
 ```
 
 Expected output shape:
 
 - `CANON:` section with canonical ASCII
-- `HASH:` section with the current `_h` value rendered as hex
+- `HASH:` section containing the current `_h` value rendered as hex
 
 Authored input is not assumed to be canonical. Tobi implements the Tsubasa
 language contract and produces the canonical representation for accepted
@@ -89,10 +92,10 @@ Expected output shape:
 Canonical ASCII is the stable user-visible representation produced for accepted
 Tsubasa source. Equivalent accepted surface forms should converge here.
 
-### Hash
+### `HASH:` Label And `_h`
 
-`HASH` is the current user-visible `_h` compatibility identity for the accepted
-canonical artifact.
+`HASH:` is the CLI label under which Tobi prints the current `_h` compatibility
+identity for the accepted canonical artifact.
 
 `_h` is not a signature, certification, consensus result, or proof of truth.
 
