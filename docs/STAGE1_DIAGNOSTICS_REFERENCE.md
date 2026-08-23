@@ -43,6 +43,10 @@ If authored Tsubasa source is accepted, `canon` produces:
 - `HASH:`
 - current `_h` rendered as hex
 
+`HASH:` is the CLI label under which Tobi prints the `_h` compatibility
+identity. It does not turn `_h` into a general-purpose content hash, signature,
+certificate, or proof.
+
 Authored source is not assumed to be canonical. The accepted result is produced
 through Tsubasa canonicalization in Tobi.
 
