@@ -1,5 +1,5 @@
-name: "Organetic Tobi Validator"
-description: "GitHub Action wrapper for the released Stage 1 Tobi Validator line with controlled evaluation access"
+name: "Tobi Validator GitHub Action"
+description: "Run Tobi Validator canon or golden checks for Tsubasa artifacts through controlled evaluation access"
 
 branding:
   icon: "shield"
@@ -10,7 +10,7 @@ inputs:
     description: "Evaluation token issued through Organetic evaluation access"
     required: true
   version:
-    description: "Stage 1 release tag requested through the Organetic evaluation broker"
+    description: "Tobi Validator release tag requested through the Organetic evaluation broker"
     required: false
     default: "stage1-tobi-validator-v0.7.0"
   archive_name:

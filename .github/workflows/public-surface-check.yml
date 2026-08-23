@@ -1,0 +1,184 @@
+name: Public surface checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-surface:
+    name: Public naming and documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate public surface
+        shell: bash
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          current_files = [
+              Path(".github/ISSUE_TEMPLATE/bug_report.md"),
+              Path(".github/ISSUE_TEMPLATE/workflow_fit.md"),
+              Path("CONTACT.md"),
+              Path("NOTICE.md"),
+              Path("README.md"),
+              Path("SECURITY.md"),
+              Path("action.yml"),
+              Path("docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md"),
+              Path("docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md"),
+              Path("docs/OPEN_CONFORMANCE_CORPUS.md"),
+              Path("docs/STAGE1_DIAGNOSTICS_REFERENCE.md"),
+              Path("docs/STAGE1_GITHUB_ACTION_STARTER.md"),
+              Path("docs/STAGE1_INSTALL_AND_USAGE.md"),
+              Path("docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md"),
+              Path("docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md"),
+              Path("docs/TSUBASA_FOR_AGENTS_STAGE1.md"),
+              Path("docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md"),
+              Path("examples/github-actions/stage1_tobi_validator_example.yml"),
+          ]
+
+          errors: list[str] = []
+          texts: dict[Path, str] = {}
+
+          for path in current_files:
+              if not path.is_file():
+                  errors.append(f"missing required public-surface file: {path}")
+                  continue
+              text = path.read_text(encoding="utf-8")
+              texts[path] = text
+
+              for line_number, line in enumerate(text.splitlines(), start=1):
+                  if line.rstrip() != line:
+                      errors.append(f"trailing whitespace: {path}:{line_number}")
+
+              if path.suffix == ".md" and text.count("```") % 2:
+                  errors.append(f"unbalanced fenced code blocks: {path}")
+
+          forbidden_terms = {
+              "Proof-by-example": "ambiguous proof wording",
+              "drift-equivalent": "unsupported drift-equivalence wording",
+              "canonical truth": "canonical representation must not be called truth",
+              "canonical meaning": "canonical output must not be called semantic meaning",
+              "same-meaning": "unsupported semantic-equivalence shorthand",
+              "same meaning": "unsupported semantic-equivalence shorthand",
+              "Tobi compares": "Tobi does not expose a general artifact-comparison command",
+              "Tobi Validator compares": "Tobi does not expose a general artifact-comparison command",
+              "Tobi gates": "Tobi does not own downstream action policy",
+              "canonical ASCII / _h / diagnostics": "accepted and rejected outputs must remain explicitly branched",
+              "current public-safe current": "duplicated editorial wording",
+              "current accepted current": "duplicated editorial wording",
+          }
+
+          for path, text in texts.items():
+              for term, reason in forbidden_terms.items():
+                  if term.lower() in text.lower():
+                      errors.append(f"{reason}: {path} contains {term!r}")
+
+              if "Stage 1" in text:
+                  errors.append(
+                      f"unclassified current-facing Stage 1 wording: {path}; "
+                      "use technical identifiers, filenames, or explicit historical wording instead"
+                  )
+
+          historical_lockup = "AI Verification Engine / Tobi Validator"
+          install_path = Path("docs/STAGE1_INSTALL_AND_USAGE.md")
+          for path, text in texts.items():
+              count = text.count(historical_lockup)
+              if path == install_path:
+                  if count != 1:
+                      errors.append(
+                          f"expected one explicit historical CLI-banner lockup in {path}, found {count}"
+                      )
+              elif count:
+                  errors.append(f"retired product lockup remains in current copy: {path}")
+
+          reference_path = Path(
+              "docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md"
+          )
+          reference_text = texts.get(reference_path, "")
+          if not reference_text.startswith(
+              "# Tsubasa Public Syntax and Authoring Reference\n"
+          ):
+              errors.append(
+                  "interim public reference must not collide with the future "
+                  "Tsubasa Language Reference book title"
+              )
+          if "does not replace the future complete Tsubasa Language Reference book" not in reference_text:
+              errors.append("interim/future Tsubasa reference boundary is missing")
+
+          governance_path = Path(
+              "docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md"
+          )
+          governance_text = texts.get(governance_path, "")
+          governance_outcome_pattern = re.compile(
+              r"→ accepted:\n"
+              r"\s+canonical ASCII \+ _h compatibility identity\n"
+              r"\s+OR rejected:\n"
+              r"\s+deterministic diagnostics"
+          )
+          if not governance_outcome_pattern.search(governance_text):
+              errors.append(
+                  "governance flow must explicitly branch accepted and rejected validator outputs"
+              )
+
+          action = texts.get(Path("action.yml"), "")
+          expression_open = "$" + "{{"
+          required_action_fragments = [
+              'name: "Tobi Validator GitHub Action"',
+              "eval_token:",
+              'default: "stage1-tobi-validator-v0.7.0"',
+              f"if: {expression_open} inputs.mode == 'canon' }}}}",
+              f"if: {expression_open} inputs.mode == 'golden' }}}}",
+              'if ($mode -ne "canon" -and $mode -ne "golden")',
+          ]
+          for fragment in required_action_fragments:
+              if fragment not in action:
+                  errors.append(f"action.yml missing required fragment: {fragment}")
+          if re.search(r"mode\s*[:=]\s*['\"]?validate\b", action, re.IGNORECASE):
+              errors.append("unsupported validate mode appears in action.yml")
+
+          for fixture in [Path("examples/golden/fixtures.json")]:
+              try:
+                  json.loads(fixture.read_text(encoding="utf-8"))
+              except Exception as exc:  # noqa: BLE001
+                  errors.append(f"invalid JSON fixture {fixture}: {exc}")
+
+          markdown_link = re.compile(r"\[[^\]]*\]\((\.?\.?/[^)#?]+)(?:#[^)]+)?\)")
+          for path, text in texts.items():
+              if path.suffix != ".md":
+                  continue
+              for target in markdown_link.findall(text):
+                  resolved = (path.parent / target).resolve()
+                  try:
+                      resolved.relative_to(Path.cwd().resolve())
+                  except ValueError:
+                      errors.append(f"relative link escapes repository: {path} -> {target}")
+                      continue
+                  if not resolved.exists():
+                      errors.append(f"broken relative link: {path} -> {target}")
+
+          if errors:
+              print("Public-surface validation failed:", file=sys.stderr)
+              for error in errors:
+                  print(f"- {error}", file=sys.stderr)
+              raise SystemExit(1)
+
+          print(f"Validated {len(current_files)} current public-surface files.")
+          print("Naming, boundary, Action-surface, JSON, link, and formatting checks passed.")
+          PY

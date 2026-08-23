@@ -1,53 +1,64 @@
-# Stage 1 Diagnostics Reference
+# Tobi Validator Diagnostics Reference
 
-Project: Organetic Sphere  
-Component: Tobi  
-Product: AI Verification Engine / Tobi Validator  
-Scope: operator reference for current shipped validator diagnostics  
-Date basis: 2026-04-15
+Project: Organetic Sphere
+Component: Tobi Validator
+Descriptor: Reasoning Artifact Validator
+Scope: operator reference for current released validator diagnostics
+Date basis: 2026-08-23
 
-## What This Doc Is For
+## What This Document Is For
 
-This document is a practical operator reference for the current shipped validator diagnostics.
+This document is a practical operator reference for Tobi diagnostics.
 
 Use it to answer:
 
 - what an error code usually means
-- whether the failure is earlier-source rejection or semantic rejection
-- what to check first before reporting an issue
-- how to distinguish source-validation failure from `golden` mismatch
+- whether failure occurred during source ingestion, parsing, or semantic checks
+- what to check before reporting an issue
+- how to distinguish source rejection from `golden` mismatch
 
 This document is not:
 
 - semantic authority
 - a promise of broader platform behavior
-- a runtime/backend/API guide
+- a runtime, backend, or public API guide
 
-For issue classification and the exact Stage 1 reproduction checklist, use:
+The Tsubasa language contract owns semantics. Tobi implements and
+operationally enforces that contract.
+
+For issue classification and the exact reproduction checklist, use:
 
 - `docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md`
 
 ## Reading Model
 
-There are three main outcomes in the shipped validator workflow:
+There are three main outcomes in the released validator workflow.
 
-### Accepted Input
+### Accepted Authored Source
 
-If input is accepted by the current validator, `canon` produces:
+If authored Tsubasa source is accepted, `canon` produces:
 
 - `CANON:`
 - canonical ASCII
 - `HASH:`
 - current `_h` rendered as hex
 
-### Rejected Input With Diagnostics
+`HASH:` is the CLI label under which Tobi prints the `_h` compatibility
+identity. It does not turn `_h` into a general-purpose content hash, signature,
+certificate, or proof.
 
-If input is rejected, the validator returns a diagnostic code, message, and usually a span.
+Authored source is not assumed to be canonical. The accepted result is produced
+through Tsubasa canonicalization in Tobi.
+
+### Rejected Authored Source With Diagnostics
+
+If source is rejected, Tobi returns a diagnostic code, message, and usually a
+span.
 
 Practical rule:
 
-- earlier ingress / lexer / parser rejection means the input was not accepted at all
-- `E100`-`E107` means the input parsed far enough to hit current shipped static-semantics checks
+- ingress, lexer, or parser rejection means the source was not accepted
+- `E100`–`E107` means the source parsed far enough to reach current static-semantics checks
 
 ### Conformance / Golden Mismatch
 
@@ -58,7 +69,7 @@ It means:
 - the fixture expected one result
 - the current validator produced another result
 
-Typical `golden` mismatch classes in the shipped runner include:
+Typical mismatch classes include:
 
 - canonical mismatch
 - hash mismatch
@@ -66,11 +77,12 @@ Typical `golden` mismatch classes in the shipped runner include:
 - error message-class mismatch
 - error span mismatch
 
-This is a conformance expectation failure, not automatically a parser or semantic acceptance failure.
+This is a conformance expectation failure, not automatically a parser or
+semantic acceptance failure.
 
 ## Error-Code Reference
 
-This reference covers the shipped semantic diagnostic range:
+This reference covers the released semantic diagnostic range:
 
 - `E100`
 - `E101`
@@ -81,7 +93,7 @@ This reference covers the shipped semantic diagnostic range:
 - `E106`
 - `E107`
 
-### `E100` - semantic call arity mismatch
+### `E100` — semantic call arity mismatch
 
 - Short meaning:
   - a builtin was called with the wrong number of arguments
@@ -94,7 +106,7 @@ This reference covers the shipped semantic diagnostic range:
 - Usual class:
   - callable/use-shape issue
 
-### `E101` - semantic exact-decimal type mismatch
+### `E101` — semantic exact-decimal type mismatch
 
 - Short meaning:
   - a strict exact-decimal comparison received the wrong type
@@ -107,7 +119,7 @@ This reference covers the shipped semantic diagnostic range:
 - Usual class:
   - typing issue
 
-### `E102` - semantic builtin argument type mismatch
+### `E102` — semantic builtin argument type mismatch
 
 - Short meaning:
   - the call shape is valid, but one or more builtin arguments have the wrong type
@@ -117,24 +129,24 @@ This reference covers the shipped semantic diagnostic range:
   - `to_dec` / `to_flt` optional context argument is not a string
 - What to check first:
   - the builtin being called
-  - the type of each argument at the exact reported span
+  - the type of each argument at the reported span
   - whether mixed-type equality or wrong context-argument type was used
 - Usual class:
   - typing issue
 
-### `E103` - semantic match arm result type mismatch
+### `E103` — semantic match arm result type mismatch
 
 - Short meaning:
   - match arms do not return the same result type
 - Typical cause:
-  - one arm returns a decimal-like result while another returns string/bool/other type
+  - one arm returns a decimal-like result while another returns string, boolean, or another type
 - What to check first:
   - each arm result expression
   - whether one arm accidentally returns a different type than the others
 - Usual class:
   - typing issue
 
-### `E104` - semantic atomic/effect boundary violation
+### `E104` — semantic atomic/effect boundary violation
 
 - Short meaning:
   - an atomic-only or effectful expression was used in the wrong context
@@ -144,23 +156,23 @@ This reference covers the shipped semantic diagnostic range:
 - What to check first:
   - whether the operation must be inside `atomic{...}`
   - whether an effectful expression appears in a pure value position
-  - the exact span, because it usually points directly at the boundary violation source
+  - the exact span, because it usually points at the boundary violation
 - Usual class:
   - atomic/barrier issue
 
-### `E105` - semantic explicit barrier required
+### `E105` — semantic explicit barrier required
 
 - Short meaning:
   - exact decimal comparison requires an explicit barrier conversion
 - Typical cause:
-  - floatish value from `to_flt(...)` was compared without an explicit `to_dec(...)` barrier
+  - floatish value from `to_flt(...)` was compared without explicit `to_dec(...)`
 - What to check first:
   - whether comparison input came from `to_flt(...)`
   - whether an explicit `to_dec(...)` conversion is missing before exact decimal comparison
 - Usual class:
   - atomic/barrier issue
 
-### `E106` - semantic pattern type mismatch
+### `E106` — semantic pattern type mismatch
 
 - Short meaning:
   - the pattern does not match the scrutinee type expected by the current validator
@@ -172,17 +184,17 @@ This reference covers the shipped semantic diagnostic range:
 - Usual class:
   - typing issue
 
-### `E107` - semantic call target is not callable
+### `E107` — semantic call target is not callable
 
 - Short meaning:
   - the current MVP rejected the call target itself
 - Typical cause:
-  - calling a local value as if it were a callable
-  - calling a boolean literal as if it were a callable
-  - using a non-identifier call target in MVP
+  - calling a local value as if it were callable
+  - calling a boolean literal as if it were callable
+  - using a non-identifier call target in the MVP
 - What to check first:
   - the callee expression itself
-  - whether the callee is a builtin identifier, unresolved external identifier, or a local non-callable value
+  - whether the callee is a builtin identifier, unresolved external identifier, or local non-callable value
 - Usual class:
   - callable/use-shape issue
 
@@ -194,12 +206,12 @@ Keep these failure modes separate.
 
 Typical signs:
 
-- codes outside `E100`-`E107`
+- codes outside `E100`–`E107`
 - malformed source
-- invalid token/character
+- invalid token or character
 - delimiter or structure problems
 
-Representative current examples:
+Representative examples:
 
 - `E010` unexpected character
 - `E021` unclosed delimiter / delimiter-shape failure
@@ -207,20 +219,20 @@ Representative current examples:
 
 Meaning:
 
-- the input was not accepted by the frontend
-- static semantics may not have run yet
+- source was not accepted by the frontend
+- static semantics may not have run
 
 ### Semantic Rejection
 
 Typical signs:
 
-- codes `E100`-`E107`
-- input parsed, but current shipped semantic checks rejected it
+- codes `E100`–`E107`
+- source parsed, but current semantic checks rejected it
 
 Meaning:
 
-- the validator accepted the syntax far enough to perform current static-semantics checks
-- the rejection is about current validator constraints, not just malformed syntax
+- syntax was accepted far enough to perform current static-semantics checks
+- rejection concerns current validator constraints rather than malformed syntax alone
 
 ### Golden Mismatch
 
@@ -234,14 +246,14 @@ Typical signs:
 
 Meaning:
 
-- the fixture expectation did not match actual validator behavior
-- the source may still be valid or invalid exactly as designed; the problem is the conformance expectation mismatch
+- fixture expectation did not match actual validator behavior
+- source may still be valid or invalid exactly as designed; the issue is the conformance expectation
 
 ## Common Operator Mistakes
 
 ### Wrong file path
 
-- `canon` fails because the input file path is wrong
+- `canon` fails because the input path is wrong
 - check the path before assuming validator failure
 
 ### Wrong fixture path
@@ -252,57 +264,62 @@ Meaning:
 ### Malformed source
 
 - parser/earlier rejection appears before semantic checks
-- look for non-`E100`-`E107` codes such as lexer/parser failures
+- look for non-`E100`–`E107` codes such as lexer/parser failures
 
 ### Semantic rejection
 
 - source parses, then current semantic checks reject it
-- use the `E100`-`E107` table above before guessing
+- use the `E100`–`E107` table before guessing
 
 ### Using the wrong fixture corpus
 
 - shipped demo fixtures and project-owned fixtures are not interchangeable unless intended
 - confirm which corpus the command was supposed to use
 
-### Reading a `golden` mismatch as "the platform is broken"
+### Reading a `golden` mismatch as “the platform is broken”
 
-- a `golden` mismatch is usually a conformance expectation mismatch, not proof of runtime/backend/platform failure
-- keep the interpretation narrow and validator-first
+- a `golden` mismatch is usually a conformance expectation mismatch
+- keep interpretation narrow and validator-first
 
 ## What To Capture When Reporting An Issue
 
 Capture exactly:
 
 - exact command
-- exact input file or fixture file
+- exact source file or fixture file
 - exact output
 - exact diagnostic code and span if present
 - validator version / release tag
 
-For the current shipped cut, the release tag is:
+The current technical release tag remains:
 
 - `stage1-tobi-validator-v0.7.0`
+
+That compatibility-sensitive identifier is not the public product name.
 
 Support-quality rule:
 
 - prefer minimal reproducible inputs
 - prefer exact fixture files over paraphrases
-- include whether this was `canon` or `golden`
-- include whether the issue is docs mismatch, diagnostics clarity, fixture mismatch, or workflow friction
+- identify whether the issue occurred in `canon` or `golden`
+- identify whether it concerns docs, diagnostics clarity, fixture mismatch, or workflow friction
 
-## Non-Goals
+## Boundaries
 
 This document does not:
 
 - define Tsubasa semantics
-- replace release docs
+- replace release documentation
 - promise runtime behavior
 - promise backend/materialization behavior
-- promise verification API behavior
-- widen the shipped product into a broader platform
+- promise public verification API behavior
+- widen Tobi Validator into a broader platform
 
-Later enhancement / not part of first shipped diagnostics/reference UX:
+`_h` is compatibility identity only. Canonical equality does not establish
+factual truth, and validator acceptance is not universal correctness.
+
+Later enhancement, not part of the current diagnostics/reference UX:
 
 - richer diagnostic cookbook by syntax family
 - platform-specific onboarding
-- API-oriented error handling guidance
+- API-oriented error-handling guidance

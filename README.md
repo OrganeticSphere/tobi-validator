@@ -1,29 +1,54 @@
 # Tobi Validator
 
-Public GitHub entry surface for the released Stage 1 product line of Organetic:
+**Reasoning Artifact Validator**
 
-**AI Verification Engine / Tobi Validator**
+> Deterministic validation for canonical reasoning artifacts.
 
-This repository provides the public GitHub entry for:
+Tobi Validator deterministically validates and canonicalizes Tsubasa reasoning
+artifacts for use at workflow boundaries.
+
+The public authoring and validation model is:
+
+```text
+authored Tsubasa source
+→ validation and Tsubasa canonicalization through Tobi
+→ canonical ASCII + _h compatibility identity
+```
+
+or, for rejected input:
+
+```text
+authored Tsubasa source
+→ validation through Tobi
+→ deterministic diagnostics
+```
+
+Authored source is not assumed to be canonical. The Tsubasa language contract
+defines the semantic and canonical rules; Tobi is the reference validator that
+implements and operationally enforces that contract.
+
+This repository is the public GitHub entry surface for Tobi Validator. It
+provides:
 
 - public documentation
 - shipped examples
 - GitHub workflow adoption guidance
 - diagnostics and support guidance
 - workflow-fit and issue intake
-- the public GitHub Action wrapper for the released Stage 1 validator line
+- the public Tobi Validator GitHub Action wrapper
 
 It is a public documentation and adoption repository.
 
 It is **not** the full development source repository.
 
-It is also **not** an unrestricted public binary distribution channel for the full Stage 1 product surface.
+It is also **not** an unrestricted public binary-distribution channel. The
+Action wrapper is public; controlled validator delivery remains separate.
 
 ---
 
-## Released Stage 1 Surface
+## Released Tobi Validator Surface
 
-The current released Stage 1 surface is intentionally narrow:
+The released surface is intentionally narrow:
 
 - installable `tobi` CLI
 - canonical ASCII output
@@ -32,12 +57,16 @@ The current released Stage 1 surface is intentionally narrow:
 - `golden` conformance execution
 - thin packaging and install / usage framing
 
-Stage 1 should not be read as:
+Tobi Validator should not be read as:
 
 - a runtime / backend product
-- a verification API
+- a public verification API
 - a platform SDK
+- a theorem prover or universal truth engine
 - a broader Organetic platform release
+
+`_h` is compatibility identity only. Canonical equality does not establish
+factual truth, and validator acceptance is not universal correctness.
 
 ---
 
@@ -45,17 +74,25 @@ Stage 1 should not be read as:
 
 For the shortest public path:
 
-- [Stage 1 Quickstart](./docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md)
+- [Tobi Validator Quickstart](./docs/STAGE1_QUICKSTART_FIRST_10_MINUTES.md)
 - [Finding Your First Reasoning Artifacts](./docs/FINDING_YOUR_FIRST_REASONING_ARTIFACTS.md)
-- [Agent workflow governance vs reasoning verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
-- [Tsubasa Stage 1 Public Syntax And Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
-- [Open Stage 1 Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md)
-- [Stage 1 Install And Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
-- [Stage 1 Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
-- [Stage 1 Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
-- [Stage 1 GitHub Action Starter](./docs/STAGE1_GITHUB_ACTION_STARTER.md)
+- [Agent Workflow Governance vs Reasoning Verification](./docs/AGENT_WORKFLOW_GOVERNANCE_VS_REASONING_VERIFICATION.md)
+- [Tsubasa Public Syntax and Authoring Reference](./docs/TSUBASA_STAGE1_PUBLIC_SYNTAX_AND_AUTHORING_REFERENCE.md)
+- [Tsubasa Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md)
+- [Tobi Validator Install and Usage](./docs/STAGE1_INSTALL_AND_USAGE.md)
+- [Tobi Validator Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
+- [Tobi Validator Support and Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
+- [Tobi Validator GitHub Action Starter](./docs/STAGE1_GITHUB_ACTION_STARTER.md)
 
-Representative command shapes for the released validator line:
+The public syntax-and-authoring document above is an interim reference for the
+current released validator corridor. It does not replace the forthcoming
+complete **Tsubasa Language Reference** book.
+
+The physical filenames above retain legacy `STAGE1` spelling for link stability.
+Their visible titles and current product language follow the active Tobi public
+naming contract.
+
+Representative command shapes:
 
 ```powershell
 .\tobi.exe canon .\examples\sample.tsubasa
@@ -69,18 +106,19 @@ Representative command shapes for the released validator line:
 
 ---
 
-### Open Stage 1 conformance corpus
+### Tsubasa Conformance Corpus
 
-The public Stage 1 conformance corpus for Tsubasa artifacts is available at
+The public Tsubasa Conformance Corpus is available at
 [OrganeticSphere/tsubasa-stage1-conformance](https://github.com/OrganeticSphere/tsubasa-stage1-conformance).
-It provides public-safe `.tsubasa` examples, manifest records, verified
-canonical outputs, diagnostics, and coverage limitations. The corpus makes
-Stage 1 validator behavior inspectable without publishing the private Tobi
-Validator implementation.
+The repository slug is retained for link stability. The corpus provides
+public-safe `.tsubasa` examples, manifest records, verified canonical outputs,
+diagnostics, and coverage limitations. It makes observable Tobi Validator
+behavior more inspectable without publishing the private validator
+implementation.
 
 Read the local overview in
-[Open Stage 1 Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md), or inspect
-the public corpus
+[Tsubasa Conformance Corpus](./docs/OPEN_CONFORMANCE_CORPUS.md), or inspect the
+public corpus
 [manifest](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/corpus/manifest.v0.1.json),
 [verification report](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/verification/TOBI_RUNS_v0.1.md),
 and
@@ -89,38 +127,39 @@ and
 The public corpus can be reviewed independently. Running the validator still
 requires authorized Tobi Validator access through the
 [evaluation access path](https://organetic.ai/eval-access). It should not be
-read as free unrestricted validator
-execution.
+read as free, unrestricted validator execution.
 
 ---
 
-### Proof-by-example repository
+### Validator-Backed Example Repository
 
 See the first public flagship validator-first demo repository:
 
 - [Tobi Flagship Use Case — AI-Agent Reasoning Gate](https://github.com/OrganeticSphere/tobi-flagship-use-case)
 
-This repo shows:
-- a valid `.tsubasa` artifact,
-- a drift-equivalent convergent variant,
-- a malformed reject sibling,
-- a GitHub PR gate around the released Stage 1 validator line.
+This repository shows:
 
-## GitHub Action
+- a valid `.tsubasa` artifact
+- a surface-different accepted variant with the same recorded canonical result
+- a malformed reject sibling
+- a GitHub workflow that uses Tobi Validator results as a pull-request check
 
-This repository exposes the public GitHub Action wrapper for the released Stage 1 validator line.
+## Tobi Validator GitHub Action
 
-The wrapper is public.
+This repository exposes the public Tobi Validator GitHub Action wrapper.
 
-The binary delivery path is controlled and separate.
+The wrapper is public. Validator delivery is controlled and separate.
 
 That means:
 
-- the public action wrapper lives here
-- public evaluation users use `TOBI_EVAL_TOKEN` issued through Organetic evaluation access
+- the public Action wrapper lives here
+- evaluation users use `TOBI_EVAL_TOKEN` issued through Organetic evaluation access
 - private distribution credentials are internal to Organetic and are not required in customer repositories
-- private distribution access is handled internally by Organetic's evaluation broker
-- the action infers the release archive from the runner OS and architecture when no explicit archive override is provided
+- controlled distribution is handled internally by Organetic's evaluation broker
+- the Action infers the release archive from runner OS and architecture when no explicit archive override is provided
+
+The Action exposes validator success or failure to GitHub. The consuming
+workflow owns any merge, release, allow, block, or escalation policy.
 
 Supported runner families for the controlled binary line:
 
@@ -129,7 +168,7 @@ Supported runner families for the controlled binary line:
 - macOS arm64
 - macOS x86_64
 
-Shipped Action modes:
+Current Action modes:
 
 - `canon`
 - `golden`
@@ -138,11 +177,12 @@ No `validate` mode is shipped.
 
 ### Required Secret
 
-For public evaluation access, create a repository secret in the consuming GitHub repository:
+For evaluation access, create this repository secret in the consuming GitHub
+repository:
 
 - `TOBI_EVAL_TOKEN`
 
-That secret should be the 7-day evaluation token issued by Organetic through the evaluation access path.
+The secret should contain the 7-day evaluation token issued through:
 
 https://organetic.ai/eval-access
 
@@ -192,17 +232,17 @@ jobs:
           golden_fixtures: examples/golden/fixtures.json
 ```
 
-### Current v1 Reading
+### Current `v1` Reading
 
-Action v1 is intentionally narrow:
+Action `v1` is intentionally narrow:
 
 - `canon` mode
 - `golden` mode
-- evaluation-token access path for public onboarding and customer repositories
-- private distribution credentials handled internally by Organetic's evaluation broker
-- checksum verification required before extraction
+- evaluation-token access for public onboarding and customer repositories
+- controlled distribution handled internally by Organetic's evaluation broker
+- checksum verification before extraction
 - OS-aware archive selection for Windows, Linux, and macOS
-- no runtime/backend/API/platform claims
+- no runtime, backend, public API, or platform claims
 
 ---
 
@@ -210,44 +250,45 @@ Action v1 is intentionally narrow:
 
 This repository contains:
 
-- public Stage 1 documentation
+- public Tobi Validator documentation
 - shipped examples
 - GitHub workflow starter materials
 - support and diagnostics guidance
-- public workflow-fit and issue intake paths
-- the public action wrapper surface
+- public workflow-fit and issue-intake paths
+- the public Action wrapper surface
 
 This repository does **not** contain:
 
 - the full private development source tree
 - internal product-boundary notes
 - internal launch-control documents
-- unrestricted public full-binary distribution for the complete Stage 1 product path
+- unrestricted public full-binary distribution
+- the production Tobi implementation
 
 ---
 
 ## GitHub-First Public Path
 
-The current public launch motion is GitHub-first:
+The current public adoption path is GitHub-first:
 
 - product understanding
 - documentation
 - shipped examples
-- a narrow GitHub workflow understanding path around the released validator CLI
-- a public action wrapper with controlled binary access
+- a narrow workflow path around the released validator CLI
+- a public Action wrapper with controlled validator delivery
 
-The public repository is meant to help users understand the released Stage 1 line and discuss workflow fit.
-
-It should not be read as a promise that the full production usage path is available through unrestricted public binary download.
+The repository is meant to help users understand Tobi Validator and evaluate
+workflow fit. It should not be read as a promise that unrestricted production
+usage is available through direct public binary download.
 
 ---
 
 ## Support
 
-If you need help interpreting the current Stage 1 surface, start with:
+For failure interpretation and issue reporting, start with:
 
-- [Stage 1 Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
-- [Stage 1 Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
+- [Tobi Validator Diagnostics Reference](./docs/STAGE1_DIAGNOSTICS_REFERENCE.md)
+- [Tobi Validator Support and Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
 
 Please keep reports exact and reproducible.
 
@@ -262,14 +303,16 @@ Please keep reports exact and reproducible.
 
 ## Current Bottom Line
 
-This repository is the public GitHub entry surface for the released Stage 1 line of Organetic.
+This repository is the public GitHub entry surface for Tobi Validator.
 
 In short:
 
-- released product: **AI Verification Engine / Tobi Validator**
-- current public path: **GitHub-first**
-- current shipped surface: **narrow validator-first CLI**
-- this repo: **docs + examples + workflow guidance + action wrapper + issue intake**
-- full controlled product delivery: **separate from unrestricted public repo access**
+- product: **Tobi Validator**
+- descriptor: **Reasoning Artifact Validator**
+- category line: **Deterministic validation for canonical reasoning artifacts.**
+- public path: **GitHub-first**
+- current surface: **narrow validator-first CLI + GitHub Action wrapper**
+- this repository: **docs + examples + workflow guidance + Action wrapper + issue intake**
+- controlled validator delivery: **separate from unrestricted public repository access**
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Join_Organetic-blue?logo=telegram&logoColor=white)](https://t.me/+wKVUzIlax44yYjhi)

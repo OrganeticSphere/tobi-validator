@@ -1,58 +1,63 @@
 ---
 name: Bug report
-about: Report a reproducible issue in the released Stage 1 surface
+about: Report a reproducible issue in Tobi Validator
 title: "[bug] "
 labels: bug
 assignees: ''
 ---
 
-# Bug report
+# Bug Report
 
-Use this template only for issues grounded in the currently released Stage 1
-surface of:
+Use this template only for issues grounded in the currently released Tobi
+Validator surface.
 
-**AI Verification Engine / Tobi Validator**
+**Tobi Validator**
+**Reasoning Artifact Validator**
 
-This public Stage 1 surface is intentionally narrow:
+> Deterministic validation for canonical reasoning artifacts.
+
+The released surface is intentionally narrow:
 
 - installable `tobi` CLI
+- authored Tsubasa source validation
 - canonical ASCII output
 - current `_h` compatibility identity
 - deterministic diagnostics
 - `golden` conformance execution
-- thin packaging and install / usage framing
+- thin packaging and workflow usage
+
+Tobi supplies validator success or failure. A consuming workflow owns any allow,
+block, merge, release, or escalation policy around that result.
 
 Do not use this template for requests about:
-- runtime/backend features
-- verification API features
-- broader platform features
-- future workflow channels as already-owed functionality
 
-## 1. Issue summary
+- runtime/backend features
+- public verification API features
+- broader platform features
+- future Organetic products as already-available functionality
+
+## 1. Issue Summary
 
 Describe the problem in one or two direct sentences.
 
-## 2. Exact command run
-
-Paste the exact command:
+## 2. Exact Command Run
 
 ```text
 paste command here
 ```
 
-## 3. Exact file / fixture used
+## 3. Exact Source / Fixture Used
 
-State the exact file or fixture used.
+State the exact source file or fixture used.
 
 Examples:
+
 - `examples/sample.tsubasa`
 - `examples/golden/fixtures.json`
-- your own input file
+- your own source file
 - your own fixture file
 
 ## 4. Environment
-
-Fill in what is relevant:
 
 - release version / tag:
 - operating system:
@@ -60,18 +65,16 @@ Fill in what is relevant:
 - local run or workflow run:
 - if workflow run, which environment:
 
-## 5. Expected behavior
+## 5. Expected Behavior
 
 Describe what you expected to happen.
 
-## 6. Actual behavior
+## 6. Actual Behavior
 
-Describe what actually happened.
-
-If possible, paste exact output:
+Describe what happened.
 
 ```text
-paste output here
+paste exact output here
 ```
 
 ## 7. Diagnostics
@@ -92,9 +95,7 @@ Can you reproduce it consistently?
 
 If yes, list the shortest reproduction steps.
 
-## 9. Issue classification
-
-Choose the closest classification:
+## 9. Issue Classification
 
 - [ ] docs mismatch
 - [ ] diagnostics clarity issue
@@ -103,12 +104,10 @@ Choose the closest classification:
 - [ ] fixture mismatch
 - [ ] workflow friction
 - [ ] setup / operator issue
-- [ ] other narrow Stage 1 issue
+- [ ] other narrow Tobi Validator issue
 
-## 10. Scope confirmation
+## 10. Scope Confirmation
 
-Please confirm:
-
-- [ ] this report is grounded in the currently released Stage 1 surface
+- [ ] this report is grounded in the currently released Tobi Validator surface
 - [ ] this report is not asking for runtime/backend/API/platform functionality as if already released
 - [ ] the information above is exact to the best of my ability

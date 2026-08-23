@@ -1,81 +1,99 @@
-# Stage 1 Quickstart - First 10 Minutes
+# Tobi Validator Quickstart — First 10 Minutes
 
-Project: Organetic Sphere  
-Component: Tobi  
-Product: AI Verification Engine / Tobi Validator  
-Scope: first-time public GitHub entry quickstart  
-Date basis: 2026-04-15
+Project: Organetic Sphere
+Component: Tobi Validator
+Descriptor: Reasoning Artifact Validator
+Scope: first-time public GitHub entry quickstart
+Date basis: 2026-08-23
+
+> Deterministic validation for canonical reasoning artifacts.
 
 ## What This Product Is
 
-`AI Verification Engine / Tobi Validator` is a narrow validator-first CLI.
+Tobi Validator is a narrow validator-first CLI.
 
 It is for:
 
-- canonicalizing accepted Tsubasa source
-- producing the current validator-facing `_h` compatibility identity
-- surfacing deterministic diagnostics
-- running shipped golden/conformance checks
+- validating authored Tsubasa source
+- applying Tsubasa canonicalization through Tobi
+- producing canonical ASCII for accepted source
+- producing the current `_h` compatibility identity
+- surfacing deterministic diagnostics for rejected source
+- running shipped `golden` conformance checks
 
 It is not:
 
 - a runtime
 - a backend
-- a verification API
+- a public verification API
 - a platform SDK
+- a theorem prover or universal truth engine
+
+The source-to-result model is:
+
+```text
+authored Tsubasa source
+→ validation and canonicalization through Tobi
+→ canonical ASCII + _h compatibility identity
+```
+
+or:
+
+```text
+authored Tsubasa source
+→ validation through Tobi
+→ deterministic diagnostics
+```
+
+Authored input is not assumed to be canonical. The Tsubasa language contract
+owns semantics; Tobi is the reference validator that implements that contract.
 
 ## What This Public Repository Is For
 
 This public repository is for:
 
-- understanding the released Stage 1 surface
-- reading the public docs
+- understanding the released Tobi Validator surface
+- reading public documentation
 - inspecting shipped examples
 - understanding GitHub workflow fit
 - reporting reproducible issues and workflow-fit questions
 
-It is not the full private development source repository.
-
-It should also not be read as an unrestricted public full-binary distribution
-path for the complete Stage 1 product usage contour.
+It is not the full private development source repository or an unrestricted
+public full-binary distribution path.
 
 ## First 10 Minutes In This Repository
 
-Use these first 10 minutes to do four things:
+Use these first 10 minutes to:
 
-1. understand the released Stage 1 product contour
+1. understand the released Tobi Validator product contour
 2. inspect the shipped examples
 3. understand the command shapes of the released CLI
-4. understand the GitHub-first workflow path
+4. understand the GitHub-first Action path
 
 ## Released Command Shapes
-
-Representative command shapes for the released validator line are:
 
 ```powershell
 .\tobi.exe canon .\examples\sample.tsubasa
 .\tobi.exe golden .\examples\golden\fixtures.json
 ```
 
-These command shapes show how the released validator line is intended to be used.
+These commands show how the validator is used. They do not imply unrestricted
+public binary delivery through this repository.
 
-They do not by themselves imply unrestricted public full-binary delivery through
-this repository.
+## Shipped Examples
 
-## Shipped Examples In This Repository
-
-This public repository includes:
+This repository includes:
 
 - `examples/sample.tsubasa`
 - `examples/golden/fixtures.json`
 
 Use them to understand:
 
-- the shape of accepted input
-- the shape of expected canonical output
-- the kind of fixtures used by `golden`
+- the shape of authored Tsubasa source
+- the canonical output produced for accepted source
+- the fixture structure used by `golden`
 
-## What Successful Stage 1 Output Looks Like
+## What Successful Output Looks Like
 
 For `canon`, the expected output shape is:
 
@@ -88,7 +106,7 @@ For `golden`, the expected output shape is:
 
 - `OK (<n> fixtures)`
 
-For the current shipped fixture corpus, the representative success reading is:
+For the current shipped fixture corpus, a representative success reading is:
 
 - `OK (45 fixtures)`
 
@@ -96,53 +114,48 @@ For the current shipped fixture corpus, the representative success reading is:
 
 ### Canonical ASCII
 
-Canonical ASCII is the stable user-visible normalized form of accepted Tsubasa source.
-Different source skins that mean the same thing should converge here.
+Canonical ASCII is the stable representation produced through Tsubasa
+canonicalization in Tobi for accepted source. Supported surface variants may
+converge to the same recorded canonical output.
 
-### HASH
+### `HASH:` Label And `_h`
 
-`HASH` is the current validator-facing `_h` compatibility identity for the
-accepted canonical artifact.
+`HASH:` is the CLI label under which Tobi prints the current `_h` compatibility
+identity for the accepted canonical artifact.
+
+`_h` is compatibility identity only. It is not proof, certification, signature,
+or consensus.
 
 ### Diagnostics
 
-If input is rejected, Tobi returns deterministic diagnostics.
-
-That means:
+If input is rejected, Tobi returns deterministic diagnostics:
 
 - stable error codes
 - stable spans under the current validator contract
 - explicit failure instead of silent acceptance
 
-## What This First Release Does Not Do
+## What This Release Does Not Do
 
-This first shipped cut does not provide:
+The current product does not provide:
 
 - runtime execution
 - backend output
 - code generation
 - materialization
-- verification API
+- public verification API
 - broader platform or integration surface
 
-Do not read the public repository or its examples as proof of unrestricted
-runtime/backend/product maturity beyond the validator-first contour.
+Do not read the repository or its examples as proof of runtime, backend, or
+platform maturity beyond the validator-first contour.
 
 ## What To Do Next
 
-After this first 10-minute pass through the public repository:
+Continue with:
 
-- read `docs/STAGE1_INSTALL_AND_USAGE.md`
-- read `docs/STAGE1_DIAGNOSTICS_REFERENCE.md`
-- read `docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md`
-- read `docs/STAGE1_GITHUB_ACTION_STARTER.md`
-
-If your main question is GitHub workflow fit, the next document is:
-
-- `docs/STAGE1_GITHUB_ACTION_STARTER.md`
-
-If your main question is failure interpretation or issue reporting, the next
-documents are:
-
+- `docs/STAGE1_INSTALL_AND_USAGE.md`
 - `docs/STAGE1_DIAGNOSTICS_REFERENCE.md`
 - `docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md`
+- `docs/STAGE1_GITHUB_ACTION_STARTER.md`
+
+The physical filenames retain legacy `STAGE1` spelling for link stability.
+Their visible titles and current product language use Tobi Validator.

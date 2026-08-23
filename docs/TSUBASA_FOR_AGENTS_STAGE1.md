@@ -1,55 +1,62 @@
-# TSUBASA FOR AGENTS — STAGE 1
+# Tsubasa For Agents
 
-Status: public-safe explainer draft  
-Scope: narrow guidance for agent-generated artifacts in the current Stage 1 corridor  
-Product line: AI Verification Engine / Tobi Validator
+Status: public-safe explainer draft
+Scope: narrow guidance for agent-authored artifacts under the released Tobi Validator contract
+Product: Tobi Validator — Reasoning Artifact Validator
 
 ## Purpose
 
-This document explains how an agent should think about Tsubasa in the current
-Stage 1 line.
+This document explains how an AI agent should approach Tsubasa when producing
+artifacts for Tobi Validator.
 
-It is intentionally narrow.
+It is intentionally narrow. It does not try to teach the complete long-term
+language vision. It teaches enough to produce validator-meaningful authored
+source without inventing unsupported semantics.
 
-It does not try to teach the whole long-term language vision.
-It teaches only enough to help an agent produce validator-meaningful artifacts.
-
-## First rule
+## First Rule
 
 Do not treat Tsubasa as a general scripting language.
 
-In the current Stage 1 corridor, the safe mental model is:
+Use this mental model:
 
-- Tsubasa is the semantic layer for canonical reasoning artifacts
-- Tobi is the validator that checks and canonicalizes accepted source
-- the current shipped surface is validator-first
+```text
+agent authors Tsubasa source
+→ Tobi validates and applies the Tsubasa canonicalization contract
+→ canonical artifact + _h, or deterministic diagnostics
+```
 
-That means the right agent behavior is:
+Authored source is not assumed to be canonical. Tsubasa owns the language and
+canonicalization contract; Tobi is the reference validator that implements and
+operationally enforces that contract.
+
+The safe agent behavior is:
 
 - produce small explicit artifacts
 - avoid imagined runtime features
 - avoid invented authoring syntax
-- stay close to what the validator can actually check
+- stay close to what Tobi can actually check
+- learn from canonical output and deterministic diagnostics
 
-## What an agent should try to produce
+## What An Agent Should Try To Produce
 
-A good Stage 1 agent output is:
+A good agent-authored artifact is:
 
 - small
 - explicit
 - reviewable
 - narrow in scope
-- suitable for pass/fail reasoning
-- easy to compare against nearby sibling cases
+- suitable for pass/reject reasoning
+- easy to place beside nearby sibling cases
 
-A bad Stage 1 agent output is:
+A bad agent output is:
 
-- a long essay
+- a long essay presented as executable structure
 - policy prose with no artifact form
-- pseudo-code that no validator can parse
-- “smart-sounding” structure with no operational meaning
+- pseudo-code Tobi cannot parse
+- smart-sounding structure with no operational meaning
+- already-canonical claims unsupported by a real validator run
 
-## What agents must not invent
+## What Agents Must Not Invent
 
 Do **not** invent:
 
@@ -59,14 +66,14 @@ Do **not** invent:
 - general string sanitation layers
 - backend execution behavior
 - platform features
-- YAML-like or DSL-like wrappers and call them Tsubasa
-- broad language rules that current Stage 1 does not expose
+- YAML-like wrappers and call them Tsubasa
+- broad language rules not exposed by the current public contract
 
-If you are unsure, narrow the artifact instead of broadening it.
+If uncertain, narrow the artifact instead of broadening it.
 
-## A better mental model
+## A Better Mental Model
 
-The agent should think in terms of:
+Think in terms of:
 
 - accepted case
 - rejected sibling
@@ -75,101 +82,119 @@ The agent should think in terms of:
 - smallest useful case set
 
 This is better than thinking in terms of:
-- “feature-rich language program”
-- “mini runtime”
-- “generic parser DSL”
-- “policy file pretending to be code”
 
-## Good first authoring pattern
+- feature-rich language program
+- mini runtime
+- generic parser DSL
+- policy file pretending to be code
 
-A good first agent-generated family looks like this:
+## Good First Authoring Pattern
+
+A useful first agent-authored family looks like this.
 
 ### Accepted case
-A small valid binding or artifact.
+
+A small valid source artifact.
 
 ### Accepted variant
-A different surface spelling that should converge to the same canonical meaning.
+
+A different supported surface form expected to produce the same recorded
+canonical output under the same validator contract.
 
 ### Reject sibling
-A nearby malformed or noisy case that should be rejected.
+
+A nearby malformed or unsupported case expected to produce deterministic
+diagnostics.
 
 That is enough for a useful first validator-facing experiment.
 
-## Two concrete patterns
+## Two Concrete Patterns
 
-### Pattern 1 — boundary
-Use when the question is:
-- does this kind of input pass or fail?
+### Pattern 1 — Boundary
+
+Use when the question is whether a kind of source should pass or reject.
 
 Shape:
+
 - one accepted case
 - one malformed reject
 - one confusable/noisy reject if relevant
 
-### Pattern 2 — convergence
-Use when the question is:
-- do these distinct spellings converge to one canonical result?
+### Pattern 2 — Convergence
+
+Use when the question is whether different supported surface forms produce one
+recorded canonical result.
 
 Shape:
+
 - baseline accepted form
-- alternate accepted spelling
-- stress spelling
+- alternate accepted form
+- stress form
 - malformed sibling
 
-## How agents should move from raw output to Tsubasa-ready form
+## From Raw Model Output To Tsubasa Source
 
-### Step 1 — start with the claim
-Example:
-- “this form should pass”
-- “this malformed sibling should fail”
-- “these two spellings should converge”
+### Step 1 — Start with the claim
 
-### Step 2 — strip unsupported mechanism
+Examples:
+
+- “this source should pass”
+- “this malformed sibling should reject”
+- “these two supported forms should produce the same canonical result”
+
+### Step 2 — Strip unsupported mechanism
+
 Remove:
+
 - invented regex rules
 - runtime assumptions
 - non-existent APIs
 - pseudo metadata wrappers
 
-### Step 3 — reduce to explicit cases
-Write actual cases, not commentary pretending to be executable structure.
+### Step 3 — Reduce to explicit source cases
 
-### Step 4 — keep only validator-meaningful expectations
+Write actual Tsubasa source, not commentary pretending to be executable
+structure.
+
+### Step 4 — Keep only validator-meaningful expectations
+
 For example:
+
 - should pass
 - should reject
-- should converge to same canonical output
-- should keep stable compatibility identity when exposed
+- should produce the same recorded canonical output as another accepted case
+- should retain stable compatibility identity when exposed
 
-### Step 5 — save the smallest useful set
-Do not start with 50 cases.
-Start with 3–7.
+### Step 5 — Save the smallest useful set
 
-## What belongs in canon thinking
+Do not begin with 50 cases. Begin with 3–7.
 
-Canon-oriented thinking should focus on:
+## Canon-Oriented Thinking
 
-- exact accepted source
+Focus on:
+
+- exact authored source
 - exact rejected source
 - canonical output for accepted source
-- stable comparison between accepted equivalents
+- recorded comparison among accepted cases under the same validator contract
 - no canonical output for rejected source
 
-## What belongs in golden thinking
+Do not fill canonical output or `_h` from model memory. Record them only from a
+real Tobi run.
 
-Golden-oriented thinking can be a little more explanatory.
+## Golden-Oriented Thinking
 
-Good golden sets may include:
+Readable golden sets may include:
 
 - baseline accepted case
-- readable accepted variant
-- stress spelling
+- accepted variant
+- stress form
 - malformed nearby sibling
 
-Golden should stay readable.
-It should not pretend commentary is executable syntax.
+Golden fixtures remain conformance evidence. They do not make validator
+acceptance universal correctness.
 
-## What agents should optimize for
+## What Agents Should Optimize For
 
 Optimize for:
 
@@ -186,23 +211,34 @@ Do not optimize for:
 - broad future-looking semantics
 - sounding impressive
 
-## A compact self-check for agents
+## Compact Self-Check
 
-Before finalizing an artifact, ask:
+Before finalizing authored source, ask:
 
-1. Can the validator actually check this?
-2. Did I invent any runtime or API?
-3. Did I write actual cases, or just policy prose?
+1. Can Tobi actually check this source under the public contract?
+2. Did I invent any runtime, API, or syntax?
+3. Did I write actual source cases, or only policy prose?
 4. Is there a nearby reject sibling?
-5. Is the artifact small enough to reuse in CI or a workflow gate?
+5. Is the artifact small enough for a workflow to use as a validation check?
+6. Am I treating canonical output as a result of validation rather than an input assumption?
 
-If the answer to question 2 is “yes”, rewrite and narrow.
+If the answer to question 2 is yes, rewrite and narrow.
 
-## Bottom line
+The consuming workflow owns any allow, block, merge, release, or escalation
+policy. Tobi supplies the validator result; it does not authorize downstream
+action.
 
-In Stage 1, the winning move is not to generate more language.
+## Boundaries
 
-The winning move is to generate less noise.
+`_h` is compatibility identity only. It is not proof, signature,
+certification, or consensus. Canonical equality does not establish factual
+truth. Tobi implements the Tsubasa language contract but does not own semantic
+authority.
 
-A good agent-generated Tsubasa artifact is small, explicit, and validator-meaningful.
-That is enough to start.
+## Bottom Line
+
+The productive move is not to generate more language. It is to generate less
+noise.
+
+A good agent-authored Tsubasa artifact begins as small, explicit source and
+becomes canonical only after acceptance through Tobi.
