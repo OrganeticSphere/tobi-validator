@@ -84,6 +84,10 @@ For the shortest public path:
 - [Tobi Validator Support And Issue Reporting](./docs/STAGE1_SUPPORT_AND_ISSUE_REPORTING.md)
 - [Tobi Validator GitHub Action Starter](./docs/STAGE1_GITHUB_ACTION_STARTER.md)
 
+The public syntax-and-authoring document above is an interim reference for the
+current released validator corridor. It does not replace the forthcoming
+complete **Tsubasa Language Reference** book.
+
 The physical filenames above retain legacy `STAGE1` spelling for link stability.
 Their visible titles and current product language follow the active Tobi public
 naming contract.
