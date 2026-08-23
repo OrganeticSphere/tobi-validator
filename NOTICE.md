@@ -39,6 +39,9 @@ The released Tobi Validator surface remains intentionally narrow:
 - `golden` conformance execution
 - thin packaging and install / usage framing
 
+Tobi supplies validator success or failure. A consuming workflow owns any allow,
+block, merge, release, or escalation policy around that result.
+
 `_h` is compatibility identity only. Canonical equality does not establish
 factual truth, and validator acceptance is not universal correctness.
 
