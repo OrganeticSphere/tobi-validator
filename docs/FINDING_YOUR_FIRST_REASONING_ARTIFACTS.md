@@ -41,6 +41,9 @@ authored Tsubasa source
 Authored source is not assumed to be canonical. Tsubasa owns the language and
 canonicalization contract; Tobi implements that contract.
 
+Tobi supplies a validator result. The consuming workflow owns any merge,
+release, allow, block, or escalation policy built around that result.
+
 ## Good First Candidates
 
 Good first candidates usually look like:
@@ -50,7 +53,7 @@ Good first candidates usually look like:
 - a “should pass” vs “should reject” example pair
 - a canonicalization-sensitive example
 - a regression case from a previous mistake
-- source forms that should converge to the same canonical representation
+- different supported source forms expected to produce the same recorded canonical output
 
 ## Weak Or Bad First Candidates
 
@@ -96,7 +99,7 @@ Look for:
 - acceptance criteria
 - reject criteria
 - reproducibility-sensitive artifacts
-- same-meaning / different-surface problems
+- different-surface / same-recorded-canonical-output cases
 - boundary cases around malformed or ambiguous source
 
 ### In Manual Review
@@ -106,16 +109,16 @@ Look for:
 - things reviewers repeatedly argue about
 - edge cases that force human intervention
 - cases where pass and reject expectations are not written down
-- regressions caused by meaning drift across a handoff
+- regressions caused by handoff drift
 
 ## Questions To Ask
 
 1. Does this candidate have a clear pass/reject boundary?
 2. Would a wrong acceptance or rejection matter?
 3. Could we save it and compare it later?
-4. Could two supported source forms express the same canonical structure?
+4. Could two supported source forms produce the same recorded canonical output?
 5. Is there a nearby malformed sibling?
-6. Does it belong in a gate before merge, release, or expensive compute?
+6. Does the consuming workflow have an explicit policy for using the result?
 
 If several answers are yes, the candidate is probably worth testing.
 
@@ -147,7 +150,7 @@ A good first family has only 3–7 cases:
 
 - 2–4 accepted cases
 - 1–3 reject cases
-- 1 equivalence or convergence case when relevant
+- 1 canonical-convergence case when relevant
 
 This is enough to learn something real without drowning in noise.
 
@@ -165,8 +168,8 @@ Example structure:
 
 ### Pattern B — Convergence Family
 
-Use when the question is whether different supported surface forms converge to
-one canonical representation.
+Use when the question is whether different supported surface forms produce one
+recorded canonical result.
 
 Example structure:
 
@@ -181,8 +184,8 @@ You found a useful reasoning-artifact candidate when:
 
 - it can be written down explicitly
 - a reviewer can disagree with it concretely
-- Tobi can meaningfully accept or reject it
-- the result affects what enters a repository or workflow
+- Tobi can accept or reject it under the current validator contract
+- the consuming workflow has an explicit policy for the result
 - it is smaller than a whole session but larger than a random token
 
 ## What To Do Next
@@ -219,7 +222,7 @@ Before your first pilot, have:
 - one source artifact expected to pass
 - one source artifact expected to reject
 - one reason why the difference matters
-- one place in your workflow where a gate is useful
+- one place in your workflow where its own policy can use the validator result
 
 That is enough to begin.
 
