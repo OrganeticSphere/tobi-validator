@@ -45,8 +45,8 @@ A good agent-authored artifact is:
 - explicit
 - reviewable
 - narrow in scope
-- suitable for pass/fail reasoning
-- easy to compare with nearby sibling cases
+- suitable for pass/reject reasoning
+- easy to place beside nearby sibling cases
 
 A bad agent output is:
 
@@ -98,8 +98,8 @@ A small valid source artifact.
 
 ### Accepted variant
 
-A different supported surface form expected to converge to the same canonical
-representation.
+A different supported surface form expected to produce the same recorded
+canonical output under the same validator contract.
 
 ### Reject sibling
 
@@ -122,8 +122,8 @@ Shape:
 
 ### Pattern 2 — Convergence
 
-Use when the question is whether different supported surface forms converge to
-one canonical representation.
+Use when the question is whether different supported surface forms produce one
+recorded canonical result.
 
 Shape:
 
@@ -140,7 +140,7 @@ Examples:
 
 - “this source should pass”
 - “this malformed sibling should reject”
-- “these two supported forms should converge”
+- “these two supported forms should produce the same canonical result”
 
 ### Step 2 — Strip unsupported mechanism
 
@@ -162,7 +162,7 @@ For example:
 
 - should pass
 - should reject
-- should converge to the same canonical output
+- should produce the same recorded canonical output as another accepted case
 - should retain stable compatibility identity when exposed
 
 ### Step 5 — Save the smallest useful set
@@ -176,7 +176,7 @@ Focus on:
 - exact authored source
 - exact rejected source
 - canonical output for accepted source
-- stable comparison between accepted equivalents
+- recorded comparison among accepted cases under the same validator contract
 - no canonical output for rejected source
 
 Do not fill canonical output or `_h` from model memory. Record them only from a
@@ -219,10 +219,14 @@ Before finalizing authored source, ask:
 2. Did I invent any runtime, API, or syntax?
 3. Did I write actual source cases, or only policy prose?
 4. Is there a nearby reject sibling?
-5. Is the artifact small enough to reuse in CI or a workflow gate?
+5. Is the artifact small enough for a workflow to use as a validation check?
 6. Am I treating canonical output as a result of validation rather than an input assumption?
 
 If the answer to question 2 is yes, rewrite and narrow.
+
+The consuming workflow owns any allow, block, merge, release, or escalation
+policy. Tobi supplies the validator result; it does not authorize downstream
+action.
 
 ## Boundaries
 
