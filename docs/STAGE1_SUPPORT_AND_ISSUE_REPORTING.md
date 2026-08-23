@@ -40,6 +40,9 @@ Keep reports narrowly grounded in:
 - `golden` conformance execution
 - thin packaging and workflow usage
 
+Tobi supplies validator results. A consuming workflow owns any allow, block,
+merge, release, or escalation policy around those results.
+
 ## Start Here Before Reporting
 
 Check:
@@ -99,6 +102,7 @@ Include:
 - what workflow you are trying to support
 - whether this is local or GitHub CI usage
 - where you think `canon` or `golden` belongs
+- what policy will consume the validator result
 - what is unclear in current docs or starter materials
 - whether you are asking about current Tobi Validator fit rather than future products
 
