@@ -20,7 +20,10 @@ Use this template when you want to discuss:
 
 - where Tobi Validator fits in a GitHub workflow
 - how to use `canon` and `golden` in CI
-- how a narrow validator gate should sit inside a repository workflow
+- how a workflow policy should consume a Tobi validation result
+
+Tobi supplies validator success or failure. The consuming workflow owns any
+allow, block, merge, release, or escalation policy.
 
 Do not use this template to assume that the following are already active public
 channels:
@@ -39,10 +42,10 @@ Describe your workflow in one or two direct sentences.
 
 Examples:
 
-- gate Tsubasa reasoning artifacts before merge
-- compare canonical outputs across runs
+- use a Tobi result in a pre-merge policy check
+- compare recorded canonical outputs across runs
 - use `golden` as a reproducibility-oriented check
-- understand whether the released CLI fits a narrow CI gate
+- understand whether the released CLI fits a narrow CI validation step
 
 ## 3. Current Environment
 
@@ -64,7 +67,7 @@ Examples:
 
 - where should `canon` run in this workflow?
 - where should `golden` run in this workflow?
-- should this be a pull-request gate or a release gate?
+- should the validator result be consumed by a pull-request or release policy?
 - does this fit the current Tobi Validator surface?
 
 ## 5. Relevant Command / Draft Workflow
@@ -86,4 +89,5 @@ paste workflow or command here
 
 - [ ] I understand the current public adoption path is GitHub-first
 - [ ] I am not treating later workflow channels as already active public paths
+- [ ] I understand that Tobi supplies a validator result and my workflow owns downstream policy
 - [ ] I am asking about narrow workflow fit around the released validator CLI
