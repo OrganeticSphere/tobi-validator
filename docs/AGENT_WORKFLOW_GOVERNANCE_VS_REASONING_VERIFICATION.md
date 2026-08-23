@@ -19,8 +19,8 @@ Validator.
 ## The Distinction
 
 ```text
-Agent workflow governance controls process and delivery.
-Tobi Validator validates the reasoning artifact.
+Agent workflow governance controls process, policy, and delivery.
+Tobi Validator validates the submitted reasoning artifact.
 ```
 
 A workflow-governance system can answer questions such as:
@@ -78,16 +78,20 @@ contract.
 Human approval can authorize a workflow, but it is not deterministic artifact
 validation.
 
+Tobi does not authorize downstream action and does not define the consuming
+workflow's allow, block, escalation, merge, or release policy.
+
 ## How Tobi Fits With Agent Governance Systems
 
-Tobi can be used inside agent-governance or agent-factory systems as a gate:
+Tobi can be used inside agent-governance or agent-factory systems as a
+validation step whose result is consumed by a separate policy layer:
 
 ```text
 agent authors Tsubasa source
 → Tobi validates and canonicalizes it
 → canonical ASCII / _h / diagnostics emitted
 → governance system records the validator result
-→ workflow continues, blocks, or escalates
+→ governance policy decides whether the workflow continues, blocks, or escalates
 ```
 
 This makes Tobi complementary to agent workflow governance.
@@ -101,8 +105,8 @@ Tobi validates reasoning artifacts.
 They produce operational evidence.
 Tobi produces validator-grounded artifact evidence.
 
-They gate workflow completion.
-Tobi gates artifact trust before action.
+They own workflow policy and action authorization.
+Tobi supplies a deterministic validation result that the workflow may use.
 ```
 
 Tobi Validator remains a narrow validator-first product for Tsubasa reasoning
