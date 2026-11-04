@@ -15,15 +15,12 @@ It exists to provide:
 - diagnostics and support guidance
 - the public Tobi Validator GitHub Action wrapper
 
-The Action wrapper is public. Validator delivery is controlled and separate:
-evaluation users present `TOBI_EVAL_TOKEN`, and Organetic's evaluation broker
-provides the requested release assets under the current controlled-access
-policy.
+The Action runs freely without registration or repository secrets. It downloads
+public GitHub Release binaries and verifies SHA-256 checksums before use.
 
 This repository is **not**:
 
 - the full private development source repository
-- an unrestricted public binary-distribution channel
 - the production Tobi implementation
 - a public verification API
 - a broader platform, runtime, backend, or SDK release surface
@@ -56,5 +53,5 @@ The legacy `STAGE1` spelling in those physical filenames is retained for link
 stability. Their visible titles and current product language use Tobi Validator.
 
 In short, this repository is the public documentation, Action wrapper, and
-adoption surface for Tobi Validator. Controlled validator delivery remains
-separate from unrestricted public repository access.
+adoption surface for Tobi Validator, with public binary releases for the CLI
+and GitHub Action.

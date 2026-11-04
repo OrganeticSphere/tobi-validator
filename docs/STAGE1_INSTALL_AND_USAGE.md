@@ -21,7 +21,9 @@ The current release-family filenames retain their compatibility-sensitive
 
 First-cut install flow:
 
-1. Obtain the authorized Tobi Validator release bundle for your platform.
+1. Download the public Tobi Validator release bundle and SHA-256 sidecar for your
+   platform from [GitHub Releases](https://github.com/OrganeticSphere/tobi-validator/releases/tag/stage1-tobi-validator-v0.7.0).
+   No registration or access token is required. Verify the archive checksum before extraction.
 2. Verify the bundle against its published `.sha256` sidecar.
 3. Unpack the bundle.
 4. Keep the extracted directory intact so the shipped examples remain available.

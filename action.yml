@@ -1,16 +1,13 @@
 name: "Tobi Validator GitHub Action"
-description: "Run Tobi Validator canon or golden checks for Tsubasa artifacts through controlled evaluation access"
+description: "Run Tobi Validator canon or golden checks for Tsubasa artifacts without access tokens"
 
 branding:
   icon: "shield"
   color: "purple"
 
 inputs:
-  eval_token:
-    description: "Evaluation token issued through Organetic evaluation access"
-    required: true
   version:
-    description: "Tobi Validator release tag requested through the Organetic evaluation broker"
+    description: "Public Tobi Validator binary release tag"
     required: false
     default: "stage1-tobi-validator-v0.7.0"
   archive_name:
@@ -40,11 +37,6 @@ runs:
       shell: pwsh
       run: |
         $mode = "${{ inputs.mode }}".ToLowerInvariant()
-        $evalToken = "${{ inputs.eval_token }}"
-
-        if ([string]::IsNullOrWhiteSpace($evalToken)) {
-          throw "Provide eval_token issued through Organetic evaluation access."
-        }
 
         if ($mode -ne "canon" -and $mode -ne "golden") {
           throw "Input 'mode' must be either 'canon' or 'golden'."
@@ -108,44 +100,28 @@ runs:
         Write-Host "Resolved Tobi archive: $archiveName"
         Write-Host "Resolved Tobi checksum sidecar: $shaName"
 
-    - name: Download bundle via evaluation broker
+    - name: Download public release bundle
       shell: pwsh
+      env:
+        TOBI_VERSION: ${{ inputs.version }}
       run: |
-        $brokerUrl = "https://api.organetic.ai/api/eval/download"
-        $version = "${{ inputs.version }}"
-        $archiveName = "$env:TOBI_ARCHIVE_NAME"
-        $shaName = "$env:TOBI_ARCHIVE_SHA256_NAME"
-        $repo = "${{ github.repository }}"
-        $runId = "${{ github.run_id }}"
-        $token = "${{ inputs.eval_token }}"
+        $version = [Uri]::EscapeDataString($env:TOBI_VERSION)
+        $archiveName = [Uri]::EscapeDataString($env:TOBI_ARCHIVE_NAME)
+        $shaName = [Uri]::EscapeDataString($env:TOBI_ARCHIVE_SHA256_NAME)
+        $releaseUrl = "https://github.com/OrganeticSphere/tobi-validator/releases/download/$version"
 
-        $headers = @{
-          Authorization = "Bearer $token"
-          "Content-Type" = "application/json"
-        }
-
-        $archiveBody = @{
-          version = $version
-          asset = $archiveName
-          repo = $repo
-          run_id = $runId
-        } | ConvertTo-Json -Compress
-
-        $shaBody = @{
-          version = $version
-          asset = $shaName
-          repo = $repo
-          run_id = $runId
-        } | ConvertTo-Json -Compress
-
-        Invoke-WebRequest -Method POST -Uri $brokerUrl -Headers $headers -Body $archiveBody -OutFile $archiveName
-        Invoke-WebRequest -Method POST -Uri $brokerUrl -Headers $headers -Body $shaBody -OutFile $shaName
+        Invoke-WebRequest -Uri "$releaseUrl/$archiveName" -OutFile $env:TOBI_ARCHIVE_NAME
+        Invoke-WebRequest -Uri "$releaseUrl/$shaName" -OutFile $env:TOBI_ARCHIVE_SHA256_NAME
 
     - name: Verify bundle checksum
       shell: pwsh
       run: |
         $expectedLine = (Get-Content "$env:TOBI_ARCHIVE_SHA256_NAME" -Raw).Trim()
         $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
+
+        if ($expectedHash -notmatch '^[a-f0-9]{64}$') {
+          throw "Invalid SHA-256 checksum sidecar."
+        }
 
         $actualHash = (Get-FileHash "$env:TOBI_ARCHIVE_NAME" -Algorithm SHA256).Hash.ToLowerInvariant()
 
@@ -157,16 +133,9 @@ runs:
       shell: pwsh
       run: |
         $archiveName = "$env:TOBI_ARCHIVE_NAME"
-        $stagingDir = "tobi-staging"
-        $bundleDir = "tobi-bundle"
-
-        if (Test-Path -LiteralPath $stagingDir) {
-          Remove-Item -LiteralPath $stagingDir -Recurse -Force
-        }
-
-        if (Test-Path -LiteralPath $bundleDir) {
-          Remove-Item -LiteralPath $bundleDir -Recurse -Force
-        }
+        $workDir = Join-Path $env:RUNNER_TEMP ("tobi-" + [Guid]::NewGuid().ToString("N"))
+        $stagingDir = Join-Path $workDir "staging"
+        $bundleDir = Join-Path $workDir "bundle"
 
         New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null
         New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
@@ -233,6 +202,10 @@ runs:
 
         $expectedLine = (Get-Content -LiteralPath $payloadShaPath -Raw).Trim()
         $expectedHash = ($expectedLine -split '\s+')[0].ToLowerInvariant()
+        if ($expectedHash -notmatch '^[a-f0-9]{64}$') {
+          throw "Invalid SHA-256 checksum sidecar."
+        }
+
         $actualHash = (Get-FileHash -LiteralPath $payloadArchive.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
 
         if ($actualHash -ne $expectedHash) {

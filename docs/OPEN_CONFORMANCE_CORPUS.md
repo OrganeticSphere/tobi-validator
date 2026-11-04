@@ -38,13 +38,10 @@ The `_h` field is optional. When present, it is a version-bound compatibility
 identity only; it is not proof of truth, certification, signature, consensus,
 or universal acceptance.
 
-The validator implementation, private source, controlled validator delivery,
-and private golden corpus remain private.
-
-Users with authorized Tobi Validator access can run the public examples.
-Users without authorized execution can still inspect the source cases, manifest
-records, expected-output records, coverage limitations, and public/private
-boundary documentation.
+The validator implementation, private source, and private golden corpus remain
+private. Everyone can run the public examples with the free GitHub Action or
+public release binaries, and inspect the source cases, manifest records,
+expected outputs, and coverage limitations.
 
 ## Source And Canonical Result
 
@@ -69,8 +66,8 @@ Action wrapper, adoption materials, and usage documentation.
 `OrganeticSphere/tsubasa-stage1-conformance` provides the public Tsubasa
 Conformance Corpus. Its slug remains unchanged in this migration.
 
-Authorized Tobi Validator execution remains controlled through evaluation
-access or authorized distribution.
+Tobi Validator execution is freely available through the public GitHub Action
+and public GitHub Releases. No registration or repository secrets are needed.
 
 ## What This Does Not Mean
 
@@ -78,7 +75,6 @@ The public corpus does not:
 
 - make Tobi Validator open source
 - publish the private engine or core
-- provide unrestricted binary distribution
 - claim full Tsubasa language coverage
 - ship a future Organetic consensus product
 - make `_h` proof of truth
