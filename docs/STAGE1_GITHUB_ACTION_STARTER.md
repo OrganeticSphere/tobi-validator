@@ -4,7 +4,7 @@ Project: Organetic Sphere
 Component: Tobi Validator
 Descriptor: Reasoning Artifact Validator
 Scope: GitHub-first workflow-fit starter for the released Tobi Validator CLI
-Date basis: 2026-08-23
+Date basis: 2026-11-04
 
 > Deterministic validation for canonical reasoning artifacts.
 
@@ -39,7 +39,7 @@ defines the semantic and canonical rules; Tobi implements and operationally
 enforces that contract.
 
 This starter is not a new product surface. It uses the published Tobi Validator
-GitHub Action wrapper and the current evaluation-access path. It is not a
+GitHub Action wrapper with public release downloads and no secret setup. It is not a
 verification API or a platform integration layer.
 
 ## What It Uses
@@ -51,7 +51,7 @@ This starter uses only the released Tobi Validator CLI surface:
   - `examples/sample.tsubasa`
   - `examples/golden/fixtures.json`
 - deterministic validator exits for pass/fail handling in CI
-- controlled validator delivery through `eval_token`
+- free validator execution through public GitHub Release downloads
 - OS-aware archive selection by the Action wrapper
 
 Reference command shapes:
@@ -76,11 +76,8 @@ The example workflow should be read as:
 - a workflow-fit aid
 - a support-layer example
 
-It should not be read as proof that unrestricted public full-binary production
-usage is available through the repository by default.
-
-The Action wrapper is public. Validator delivery is controlled and separate
-through Organetic's evaluation broker.
+The Action and released binaries are publicly available. No registration,
+access token, or repository secret is required, including on fork pull requests.
 
 Tobi exposes validator success or failure. The consuming workflow owns any
 merge, release, allow, block, or escalation policy.
@@ -90,7 +87,7 @@ merge, release, allow, block, or escalation policy.
 A narrow Tobi Validator workflow should:
 
 1. check out the repository that owns the files you want to validate
-2. request evaluation access from Organetic and store the issued token as `TOBI_EVAL_TOKEN`
+2. use `OrganeticSphere/tobi-validator@v2` without credentials
 3. let the Action infer the platform archive unless an explicit override is required
 4. verify integrity material before extraction
 5. run the released CLI rather than an invented wrapper surface
@@ -104,15 +101,13 @@ A narrow Tobi Validator workflow should:
    - `examples/sample.tsubasa`
    - `examples/golden/fixtures.json`
 3. Replace those paths with repository-owned validator inputs after the first successful run.
-4. Add `TOBI_EVAL_TOKEN` to repository secrets and use the published Action wrapper.
+4. Use the published Action wrapper without repository secrets.
 5. Treat any non-zero validator exit as a validation or conformance failure.
 
 ## Current Public Execution Path
 
-- request a 7-day evaluation token from Organetic
-- store it as `TOBI_EVAL_TOKEN`
 - use `OrganeticSphere/tobi-validator@v2`
-- pass `eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}`
+- no registration or repository secrets are needed
 - run `canon` and/or `golden`
 
 Minimal example:
@@ -131,7 +126,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: OrganeticSphere/tobi-validator@v2
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: path/to/artifact.tsubasa
 ```

@@ -22,7 +22,7 @@ Please include:
 - exact source or fixture involved
 - exact observed behavior
 - whether the issue affects:
-  - controlled binary delivery
+  - checksum-verified public binary delivery
   - validator execution
   - workflow usage
   - diagnostics/reporting

@@ -58,8 +58,8 @@ This public repository is for:
 - understanding GitHub workflow fit
 - reporting reproducible issues and workflow-fit questions
 
-It is not the full private development source repository or an unrestricted
-public full-binary distribution path.
+The implementation remains private. Released binaries are publicly available
+through GitHub Releases, and the GitHub Action runs without repository secrets.
 
 ## First 10 Minutes In This Repository
 
@@ -77,8 +77,9 @@ Use these first 10 minutes to:
 .\tobi.exe golden .\examples\golden\fixtures.json
 ```
 
-These commands show how the validator is used. They do not imply unrestricted
-public binary delivery through this repository.
+Download the platform bundle and its SHA-256 sidecar from
+[GitHub Releases](https://github.com/OrganeticSphere/tobi-validator/releases/tag/stage1-tobi-validator-v0.7.0),
+verify the checksum, and extract the bundle before running these commands.
 
 ## Shipped Examples
 

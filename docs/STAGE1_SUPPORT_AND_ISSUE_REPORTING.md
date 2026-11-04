@@ -126,7 +126,7 @@ Reports should stay grounded in:
 
 - docs
 - examples
-- controlled validator delivery
+- checksum-verified public validator delivery
 - released CLI behavior
 - workflow adoption materials
 

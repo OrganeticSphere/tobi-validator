@@ -19,7 +19,6 @@ jobs:
       - name: Run Tobi canon
         uses: OrganeticSphere/tobi-validator@v2
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: examples/sample.tsubasa
 
@@ -33,6 +32,5 @@ jobs:
       - name: Run Tobi golden
         uses: OrganeticSphere/tobi-validator@v2
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: examples/golden/fixtures.json

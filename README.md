@@ -41,8 +41,9 @@ It is a public documentation and adoption repository.
 
 It is **not** the full development source repository.
 
-It is also **not** an unrestricted public binary-distribution channel. The
-Action wrapper is public; controlled validator delivery remains separate.
+The Action runs freely without registration or repository secrets. Released
+validator binaries and SHA-256 sidecars are available in this repository's
+[GitHub Releases](https://github.com/OrganeticSphere/tobi-validator/releases/tag/stage1-tobi-validator-v0.7.0).
 
 ---
 
@@ -124,10 +125,8 @@ public corpus
 and
 [coverage limitations](https://github.com/OrganeticSphere/tsubasa-stage1-conformance/blob/master/docs/COVERAGE_LIMITATIONS.md).
 
-The public corpus can be reviewed independently. Running the validator still
-requires authorized Tobi Validator access through the
-[evaluation access path](https://organetic.ai/eval-access). It should not be
-read as free, unrestricted validator execution.
+The public corpus can be reviewed independently and checked with the freely
+available Tobi Validator GitHub Action or public release binaries.
 
 ---
 
@@ -148,20 +147,18 @@ This repository shows:
 
 This repository exposes the public Tobi Validator GitHub Action wrapper.
 
-The wrapper is public. Validator delivery is controlled and separate.
-
-That means:
+The Action is free to run in public and private repositories, including fork
+pull requests. No registration, access token, or repository secret is required.
 
 - the public Action wrapper lives here
-- evaluation users use `TOBI_EVAL_TOKEN` issued through Organetic evaluation access
-- private distribution credentials are internal to Organetic and are not required in customer repositories
-- controlled distribution is handled internally by Organetic's evaluation broker
-- the Action infers the release archive from runner OS and architecture when no explicit archive override is provided
+- binaries are downloaded directly from this repository's public GitHub Releases
+- SHA-256 checksums are verified before extraction
+- the Action selects the archive for the runner OS and architecture
 
 The Action exposes validator success or failure to GitHub. The consuming
 workflow owns any merge, release, allow, block, or escalation policy.
 
-Supported runner families for the controlled binary line:
+Supported runner families:
 
 - Windows x86_64
 - Linux x86_64
@@ -175,16 +172,10 @@ Current Action modes:
 
 No `validate` mode is shipped.
 
-### Required Secret
+### Setup
 
-For evaluation access, create this repository secret in the consuming GitHub
-repository:
-
-- `TOBI_EVAL_TOKEN`
-
-The secret should contain the 7-day evaluation token issued through:
-
-https://organetic.ai/eval-access
+Check out your repository and run `OrganeticSphere/tobi-validator@v2` with
+`mode` and the input path. No secret setup is needed.
 
 ### Minimal Linux `canon` Example
 
@@ -204,7 +195,6 @@ jobs:
 
       - uses: OrganeticSphere/tobi-validator@v2
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: path/to/artifact.tsubasa
 ```
@@ -227,7 +217,6 @@ jobs:
 
       - uses: OrganeticSphere/tobi-validator@v2
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: path/to/fixtures.json
 ```
@@ -238,8 +227,8 @@ Action `v2` is intentionally narrow:
 
 - `canon` mode
 - `golden` mode
-- evaluation-token access for public onboarding and customer repositories
-- controlled distribution handled internally by Organetic's evaluation broker
+- free execution without repository secrets
+- public GitHub Release downloads
 - checksum verification before extraction
 - OS-aware archive selection for Windows, Linux, and macOS
 - no runtime, backend, public API, or platform claims
@@ -266,7 +255,6 @@ This repository does **not** contain:
 - the full private development source tree
 - internal product-boundary notes
 - internal launch-control documents
-- unrestricted public full-binary distribution
 - the production Tobi implementation
 
 ---
@@ -279,11 +267,10 @@ The current public adoption path is GitHub-first:
 - documentation
 - shipped examples
 - a narrow workflow path around the released validator CLI
-- a public Action wrapper with controlled validator delivery
+- a public Action wrapper with free execution and public binary downloads
 
-The repository is meant to help users understand Tobi Validator and evaluate
-workflow fit. It should not be read as a promise that unrestricted production
-usage is available through direct public binary download.
+Use the examples to check workflow fit, then point the Action at your own
+Tsubasa artifacts. Public release downloads support local CLI use as well.
 
 ---
 
@@ -317,7 +304,7 @@ In short:
 - public path: **GitHub-first**
 - current surface: **narrow validator-first CLI + GitHub Action wrapper**
 - this repository: **docs + examples + workflow guidance + Action wrapper + issue intake**
-- controlled validator delivery: **separate from unrestricted public repository access**
+- execution: **free GitHub Action + public release binaries**
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Join_Organetic-blue?logo=telegram&logoColor=white)](https://t.me/+wKVUzIlax44yYjhi)
 [![X Profile](https://img.shields.io/badge/X-Follow_Organetic-black?logo=x&logoColor=white)](https://x.com/OrganeticSphere)

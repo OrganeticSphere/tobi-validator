@@ -1,6 +1,9 @@
 name: Action smoke
 
 on:
+  pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -16,6 +19,8 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-15
+          - macos-15-intel
 
     steps:
       - name: Check out repository
@@ -24,7 +29,6 @@ jobs:
       - name: Run local action canon
         uses: ./
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: canon
           canon_input: examples/sample.tsubasa
 
@@ -37,6 +41,8 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
+          - macos-15
+          - macos-15-intel
 
     steps:
       - name: Check out repository
@@ -45,6 +51,5 @@ jobs:
       - name: Run local action golden
         uses: ./
         with:
-          eval_token: ${{ secrets.TOBI_EVAL_TOKEN }}
           mode: golden
           golden_fixtures: examples/golden/fixtures.json
